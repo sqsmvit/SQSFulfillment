@@ -15,7 +15,6 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Vibrator;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -534,7 +533,7 @@ public class FulfillmentScanActivity extends Activity
 
     private void listAllPossibleConfigs()
     {
-        Cursor possibleConfigQuery = configDataAccess.selectByDoublePackId(currentInvoiceRecord.accessFkPackId(null));
+        Cursor possibleConfigQuery = configDataAccess.selectByPackId(currentInvoiceRecord.accessFkPackId(null));
         possibleConfigs.clear();
         possibleConfigs.addAll(ConfigRecord.buildConfigListWithCursor(possibleConfigQuery));
 
@@ -611,11 +610,11 @@ public class FulfillmentScanActivity extends Activity
             LayoutInflater inflater = getLayoutInflater();
             convertView = inflater.inflate(rowResourceId, parent, false);
 
-            TextView configNumTextView = (TextView)convertView.findViewById(R.id.ConfigNum);
+            TextView configNameTextView = (TextView)convertView.findViewById(R.id.ConfigName);
             LinearLayout configPackLinearLayout = (LinearLayout)convertView.findViewById(R.id.ConfigPackList);
 
             ConfigRecord tempConfigRecord = list.get(position);
-            configNumTextView.setText(tempConfigRecord.accessConfigNum(null));
+            configNameTextView.setText(tempConfigRecord.accessConfigName(null));
             ArrayList<String> configPackIds = tempConfigRecord.getConfigPackIdList();
             String packName;
 
@@ -643,9 +642,6 @@ public class FulfillmentScanActivity extends Activity
         @Override
         public void onReceive(Context c, Intent intent)
         {
-            String message = String.format("in onReceive");
-            Log.d(TAG, message);
-
             if (intent.getAction().equalsIgnoreCase(ScanAPIApplication.NOTIFY_DECODED_DATA))
             {
                 String scanData = new String(intent.getCharArrayExtra(ScanAPIApplication.EXTRA_DECODEDDATA));
@@ -659,12 +655,6 @@ public class FulfillmentScanActivity extends Activity
             else if (intent.getAction().equalsIgnoreCase(ScanAPIApplication.NOTIFY_SCANNER_ARRIVAL))
             {
                 QuickToast.makeToast(c, intent.getStringExtra(ScanAPIApplication.EXTRA_DEVICENAME) + " Connected");
-            }
-            else if (intent.getAction().equalsIgnoreCase(ScanAPIApplication.NOTIFY_SCANPI_INITIALIZED))
-            {
-            }
-            else if (intent.getAction().equalsIgnoreCase(ScanAPIApplication.NOTIFY_CLOSE_ACTIVITY))
-            {
             }
             else if (intent.getAction().equalsIgnoreCase(ScanAPIApplication.NOTIFY_ERROR_MESSAGE))
             {

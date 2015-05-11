@@ -34,7 +34,8 @@ public class InvoiceRecord implements DataRecord
         sha = "";
     }
 
-    public InvoiceRecord(String invoiceId, String packId, String shipToId, String lensIds, String shipRequestId, String batchId, String bName, String date, String bxNum, String configId, String shaVal)
+    public InvoiceRecord(String invoiceId, String packId, String shipToId, String lensIds, String shipRequestId, String batchId, String bName, String date,
+                         String bxNum, String configId, String shaVal)
     {
         pkInvoiceId = invoiceId;
         fkPackId = packId;

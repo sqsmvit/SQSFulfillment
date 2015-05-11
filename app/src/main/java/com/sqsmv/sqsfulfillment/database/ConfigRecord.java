@@ -10,34 +10,34 @@ import java.util.List;
 public class ConfigRecord implements DataRecord
 {
     private String pkConfigId;
-    private String fkDoublePackId;
-    private String configNum;
-    private String fkConfigPackIds;
+    private String fkPackId;
+    private String configName;
+    private String fkSubPackIds;
     private String isValid;
     private String sha;
 
-    private ArrayList<String> configPackIdList;
+    private ArrayList<String> subPackIdList;
 
     public ConfigRecord()
     {
         pkConfigId = "";
-        fkDoublePackId = "";
-        configNum = "";
-        fkConfigPackIds = "";
+        fkPackId = "";
+        configName = "";
+        fkSubPackIds = "";
         isValid = "";
         sha = "";
-        configPackIdList = new ArrayList<>();
+        subPackIdList = new ArrayList<>();
     }
 
-    public ConfigRecord(String configId, String doublePackId, String configNumber, String configPackIds, String isValidConfig, String shaVal)
+    public ConfigRecord(String configId, String packId, String name, String subPackIds, String isValidConfig, String shaVal)
     {
         pkConfigId = configId;
-        fkDoublePackId = doublePackId;
-        configNum = configNumber;
-        fkConfigPackIds = configPackIds;
+        fkPackId = packId;
+        configName = name;
+        fkSubPackIds = subPackIds;
         isValid = isValidConfig;
         sha = shaVal;
-        configPackIdList = new ArrayList<>();
+        subPackIdList = new ArrayList<>();
         splitConfigPackIds();
     }
 
@@ -48,28 +48,28 @@ public class ConfigRecord implements DataRecord
         return pkConfigId;
     }
 
-    public String accessFkDoublePackId(String doublePackId)
+    public String accessFkPackId(String packId)
     {
-        if(doublePackId != null)
-            fkDoublePackId = doublePackId;
-        return fkDoublePackId;
+        if(packId != null)
+            fkPackId = packId;
+        return fkPackId;
     }
 
-    public String accessConfigNum(String configNumber)
+    public String accessConfigName(String name)
     {
-        if(configNumber != null)
-            configNum = configNumber;
-        return configNum;
+        if(name != null)
+            configName = name;
+        return configName;
     }
 
-    public String accessFkConfigPackIds(String configPackIds)
+    public String accessFkSubPackIds(String subPackIds)
     {
-        if(configPackIds != null)
+        if(subPackIds != null)
         {
-            fkConfigPackIds = configPackIds;
+            fkSubPackIds = subPackIds;
             splitConfigPackIds();
         }
-        return fkConfigPackIds;
+        return fkSubPackIds;
     }
 
     public String accessIsValid(String isValidConfig)
@@ -89,7 +89,7 @@ public class ConfigRecord implements DataRecord
     @Override
     public DataRecord newCopy()
     {
-        return new ConfigRecord(pkConfigId, fkDoublePackId, configNum, fkConfigPackIds, isValid, sha);
+        return new ConfigRecord(pkConfigId, fkPackId, configName, fkSubPackIds, isValid, sha);
     }
 
     @Override
@@ -100,14 +100,14 @@ public class ConfigRecord implements DataRecord
             case ConfigContract.COLUMN_NAME_PKCONFIGID:
                 accessPkConfigId(data);
                 break;
-            case ConfigContract.COLUMN_NAME_FKDOUBLEPACKID:
-                accessFkDoublePackId(data);
+            case ConfigContract.COLUMN_NAME_FKPACKID:
+                accessFkPackId(data);
                 break;
-            case ConfigContract.COLUMN_NAME_CONFIGNUM:
-                accessConfigNum(data);
+            case ConfigContract.COLUMN_NAME_CONFIGNAME:
+                accessConfigName(data);
                 break;
-            case ConfigContract.COLUMN_NAME_FKCONFIGPACKIDS:
-                accessFkConfigPackIds(data);
+            case ConfigContract.COLUMN_NAME_FKSUBPACKIDS:
+                accessFkSubPackIds(data);
                 break;
             case ConfigContract.COLUMN_NAME_ISVALID:
                 accessIsValid(data);
@@ -127,14 +127,14 @@ public class ConfigRecord implements DataRecord
             case ConfigContract.COLUMN_NAME_PKCONFIGID:
                 value = accessPkConfigId(null);
                 break;
-            case ConfigContract.COLUMN_NAME_FKDOUBLEPACKID:
-                value = accessFkDoublePackId(null);
+            case ConfigContract.COLUMN_NAME_FKPACKID:
+                value = accessFkPackId(null);
                 break;
-            case ConfigContract.COLUMN_NAME_CONFIGNUM:
-                value = accessConfigNum(null);
+            case ConfigContract.COLUMN_NAME_CONFIGNAME:
+                value = accessConfigName(null);
                 break;
-            case ConfigContract.COLUMN_NAME_FKCONFIGPACKIDS:
-                value = accessFkConfigPackIds(null);
+            case ConfigContract.COLUMN_NAME_FKSUBPACKIDS:
+                value = accessFkSubPackIds(null);
                 break;
             case ConfigContract.COLUMN_NAME_ISVALID:
                 value = accessIsValid(null);
@@ -170,45 +170,45 @@ public class ConfigRecord implements DataRecord
     public void clearRecord()
     {
         accessPkConfigId("");
-        accessFkDoublePackId("");
-        accessConfigNum("");
-        accessFkConfigPackIds("");
+        accessFkPackId("");
+        accessConfigName("");
+        accessFkSubPackIds("");
         accessIsValid("");
         accessSha("");
-        configPackIdList.clear();
+        subPackIdList.clear();
     }
 
     public void splitConfigPackIds()
     {
-        configPackIdList.clear();
-        configPackIdList.addAll(Arrays.asList(accessFkConfigPackIds(null).split(",")));
-        Collections.sort(configPackIdList);
+        subPackIdList.clear();
+        subPackIdList.addAll(Arrays.asList(accessFkSubPackIds(null).split(",")));
+        Collections.sort(subPackIdList);
     }
 
     public ArrayList<String> getConfigPackIdList()
     {
-        return new ArrayList(configPackIdList);
+        return new ArrayList<>(subPackIdList);
     }
 
     public int getNumConfigIds()
     {
-        return configPackIdList.size();
+        return subPackIdList.size();
     }
 
     public boolean hasConfigPackId(String configPackId)
     {
-        return configPackIdList.contains(configPackId);
+        return subPackIdList.contains(configPackId);
     }
 
     public boolean matchesConfigPackIds(ArrayList<String> packIdList)
     {
         boolean matches = true;
         int count = 0;
-        if(configPackIdList.size() != packIdList.size())
+        if(getNumConfigIds() != packIdList.size())
             matches = false;
-        while(matches && count < configPackIdList.size())
+        while(matches && count < getNumConfigIds())
         {
-            if(!configPackIdList.get(count).equals(packIdList.get(count)))
+            if(!subPackIdList.get(count).equals(packIdList.get(count)))
                 matches = false;
             count++;
         }

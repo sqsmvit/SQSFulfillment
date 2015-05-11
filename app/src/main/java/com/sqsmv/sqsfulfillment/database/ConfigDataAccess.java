@@ -24,10 +24,9 @@ public class ConfigDataAccess extends XMLDataAccess
         return new ConfigRecord();
     }
 
-    public Cursor selectByDoublePackId(String doublePackId)
+    public Cursor selectByPackId(String packId)
     {
-        String selectQuery = QueryBuilder.buildSelectQuery(contract.getTableName(), new String[]{"*"}, new String[]{ConfigContract.COLUMN_NAME_FKDOUBLEPACKID});
-        Cursor selectResult = db.rawQuery(selectQuery, new String[]{doublePackId});
-        return selectResult;
+        String selectQuery = QueryBuilder.buildSelectQuery(contract.getTableName(), new String[]{"*"}, new String[]{ConfigContract.COLUMN_NAME_FKPACKID});
+        return db.rawQuery(selectQuery, new String[]{packId});
     }
 }
