@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">SQS Fulfillment</string>
+    <string name="title_activity_fulfillment_scan">Main Scan</string>
+    <string name="title_activity_admin">Admin</string>
+
+    <!-- Dropbox Info -->
+    <string name="DBX_APP_KEY">ze0ukc1ozh9w88y</string>
+    <string name="DBX_SECRET_KEY">m5so9oi4qkxmcfv</string>
+    <string name="action_settings">Settings</string>
+    <string name="title_activity_socket_mobile_pair">SocketMobilePairActivity</string>
+
+    <string name="instructionsText">1. Enter your initials\n
+        2. Scan barcode on packs for pack information\n
+        3. Tap on pack information to get information on contents\n
+        4. When ready to fulfill invoices, scan barcode on invoices first, then scan matching pack barcode\n
+        5. If phone vibrates and makes a notification sound, check screen for error\n
+        6. For double packs, scan invoice barcode, then find an appropriate config to use before scanning appropriate packs\n
+        7. Press the Reset button after scanning any invoice to clear the invoice out\n
+        8. For double packs, click on the Scanned text to clear out previously scanned packs
+    </string>
+
+    <!-- Pair Activity -->
+    <string name="troubleShooting">Trouble Shooting</string>
+    <string name="troubleShootingText">If scanner does not work try these steps:\n
+        1. Restart scanner using small button\n
+            \tWait for beep and try to scan\n
+        2. Re-pair scanner following instructions below\n
+            \tWait for beep and try to scan\n
+        3. Exit and restart app\n
+            \tWait for beep and try to scan\n
+        4. Contact Manager\n</string>
+    <string name="pairHeader">Pair Instructions</string>
+    <string name="pairInstruction1">1) Hold Scan and Power buttons on scanner until device restarts</string>
+    <string name="pairInstruction2">2) Scan SPP Barcode</string>
+    <string name="pairInstruction3">3) Scan barcode below</string>
+    <string name="pairInstruction4">4) Return to main screen of app and accept pairing request if prompted
+        \n5) Wait for single beep and try to scan</string>
+    <string name="title_activity_fulfillment_scan_review">FulfillmentScanReviewActivity</string>
+
+</resources>
