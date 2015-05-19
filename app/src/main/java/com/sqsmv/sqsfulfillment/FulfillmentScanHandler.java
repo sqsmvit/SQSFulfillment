@@ -67,7 +67,7 @@ public class FulfillmentScanHandler
     {
         int response = 0;
 
-        if(!currentFulfillmentScanRecord.accessScannerInitials(null).isEmpty() && currentFulfillmentScanRecord.accessScannerInitials(null).length() >= 2)
+        if(!currentFulfillmentScanRecord.accessScannerName(null).isEmpty())
         {
             Matcher invoiceMatcher = invoicePattern.matcher(scanData);
             Matcher packMatcher = packPattern.matcher(scanData);
@@ -126,7 +126,7 @@ public class FulfillmentScanHandler
                 response = 2; //Bad barcode
         }
         else
-            response = 1; //No initials
+            response = 1; //No id
 
         return response;
     }
@@ -135,7 +135,7 @@ public class FulfillmentScanHandler
     {
         int response = 0;
 
-        if(!currentFulfillmentScanRecord.accessScannerInitials(null).isEmpty() && currentFulfillmentScanRecord.accessScannerInitials(null).length() >= 2)
+        if(!currentFulfillmentScanRecord.accessScannerName(null).isEmpty())
         {
             Matcher packMatcher = packPattern.matcher(scanData);
 
@@ -197,7 +197,7 @@ public class FulfillmentScanHandler
                 response = 2; //Bad barcode
         }
         else
-            response = 1; //No initials
+            response = 1; //No id
 
         return response;
     }

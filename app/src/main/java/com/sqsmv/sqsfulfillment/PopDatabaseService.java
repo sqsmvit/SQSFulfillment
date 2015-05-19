@@ -16,6 +16,7 @@ import com.sqsmv.sqsfulfillment.database.LensDataAccess;
 import com.sqsmv.sqsfulfillment.database.PackDataAccess;
 import com.sqsmv.sqsfulfillment.database.PackLineDataAccess;
 import com.sqsmv.sqsfulfillment.database.PackagingDataAccess;
+import com.sqsmv.sqsfulfillment.database.ScannerDataAccess;
 import com.sqsmv.sqsfulfillment.database.ShipToDataAccess;
 import com.sqsmv.sqsfulfillment.database.XMLDataAccess;
 
@@ -53,13 +54,13 @@ public class PopDatabaseService extends IntentService
             resetTables();
 
             //UI will block for these, maybe
-            XMLDataAccess[] necessaryDataAccesses = new XMLDataAccess[]{new InvoiceDataAccess(this), new PackDataAccess(this), new ConfigDataAccess(this)};
+            XMLDataAccess[] necessaryDataAccesses = new XMLDataAccess[]{new InvoiceDataAccess(this), new PackDataAccess(this), new ConfigDataAccess(this), new ScannerDataAccess(this)};
             ArrayList<Thread> necessaryUpdateThreads = new ArrayList<>();
             for(XMLDataAccess xmlDataAccess : necessaryDataAccesses)
             {
                 startUpdateThreads(xmlDataAccess, necessaryUpdateThreads);
             }
-            XMLDataAccess[] otherDataAccesses = new XMLDataAccess[]{new LensDataAccess(this), new ShipToDataAccess(this), new PackLineDataAccess(this), new PackagingDataAccess(this)};
+            XMLDataAccess[] otherDataAccesses = new XMLDataAccess[]{new ShipToDataAccess(this), new PackLineDataAccess(this), new PackagingDataAccess(this), new LensDataAccess(this)};
             ArrayList<Thread> otherUpdateThreads = new ArrayList<>();
             for(XMLDataAccess xmlDataAccess : otherDataAccesses)
             {
@@ -85,6 +86,8 @@ public class PopDatabaseService extends IntentService
 
         //Download update.txt to update DropBox to know about latest version of zip file
         dbxMan.writeToStorage("/out/update.txt", Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).toString() + File.separator + "update.txt");
+        File updateFile = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).toString() + File.separator + "update.txt");
+        updateFile.delete();
         dbxMan.writeToStorage("/out/" + zipFileName, Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).toString() + File.separator + zipFileName);
     }
 

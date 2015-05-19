@@ -40,6 +40,8 @@ import com.sqsmv.sqsfulfillment.database.PackLineRecord;
 import com.sqsmv.sqsfulfillment.database.PackRecord;
 import com.sqsmv.sqsfulfillment.database.PackagingDataAccess;
 import com.sqsmv.sqsfulfillment.database.PackagingRecord;
+import com.sqsmv.sqsfulfillment.database.ScannerDataAccess;
+import com.sqsmv.sqsfulfillment.database.ScannerRecord;
 import com.sqsmv.sqsfulfillment.database.ShipToRecord;
 
 import org.cory.libraries.MoreDateFunctions;
@@ -57,9 +59,10 @@ public class FulfillmentScanActivity extends Activity
 
     private PackDataAccess packDataAccess;
     private PackLineDataAccess packLineDataAccess;
-    private ConfigDataAccess configDataAccess;
     private LensDataAccess lensDataAccess;
     private PackagingDataAccess packagingDataAccess;
+    private ConfigDataAccess configDataAccess;
+    private ScannerDataAccess scannerDataAccess;
     private FulfillmentScanDataAccess fulfillmentScanDataAccess;
     private InvoiceRecord currentInvoiceRecord;
     private ShipToRecord currentShipToRecord;
@@ -74,7 +77,7 @@ public class FulfillmentScanActivity extends Activity
     private TextView shipToTextView;
     private TextView invoiceTextView;
     private TextView packTextView;
-    private TextView initialsTextView;
+    private TextView scannerNameTextView;
     private ListView recommendedDoublePackListView;
     private ListView scannedPackListView;
     private ListView possibleConfigListView;
@@ -95,9 +98,10 @@ public class FulfillmentScanActivity extends Activity
 
         packDataAccess = new PackDataAccess(this);
         packLineDataAccess = new PackLineDataAccess(this);
-        configDataAccess = new ConfigDataAccess(this);
         lensDataAccess = new LensDataAccess(this);
         packagingDataAccess = new PackagingDataAccess(this);
+        configDataAccess = new ConfigDataAccess(this);
+        scannerDataAccess = new ScannerDataAccess(this);
         fulfillmentScanDataAccess = new FulfillmentScanDataAccess(this);
         currentInvoiceRecord = new InvoiceRecord();
         currentShipToRecord = new ShipToRecord();
@@ -117,7 +121,7 @@ public class FulfillmentScanActivity extends Activity
         shipToTextView = (TextView)findViewById(R.id.ShipToText);
         invoiceTextView = (TextView)findViewById(R.id.InvoiceText);
         packTextView = (TextView)findViewById(R.id.PackText);
-        initialsTextView = (TextView)findViewById(R.id.InitialsText);
+        scannerNameTextView = (TextView)findViewById(R.id.ScannerNameText);
         recommendedDoublePackListView = (ListView)findViewById(R.id.RecommendedPackList);
         scannedPackListView = (ListView)findViewById(R.id.ScannedPackList);
         possibleConfigListView = (ListView)findViewById(R.id.PossibleConfigList);
@@ -159,12 +163,12 @@ public class FulfillmentScanActivity extends Activity
                 resetScans();
             }
         });
-        initialsTextView.setOnClickListener(new View.OnClickListener()
+        scannerNameTextView.setOnClickListener(new View.OnClickListener()
         {
             @Override
             public void onClick(View v)
             {
-                promptInitials();
+                promptId();
             }
         });
         packTextView.setOnClickListener(new View.OnClickListener()
@@ -197,12 +201,12 @@ public class FulfillmentScanActivity extends Activity
         displayTotalFulfillments();
 
         scannerLock = appConfig.accessBoolean(DroidConfigManager.SCANNER_LOCK, null, false);
-        String scannerInitials = appConfig.accessString(DroidConfigManager.CURRENT_SCANNER_INITIALS, null, "");
-        currentFulfillmentScanRecord.accessScannerInitials(scannerInitials);
-        if(currentFulfillmentScanRecord.accessScannerInitials(null).length() < 2)
-            displayInitialsWarning();
+        String scannerName = appConfig.accessString(DroidConfigManager.CURRENT_SCANNER_NAME, null, "");
+        currentFulfillmentScanRecord.accessScannerName(scannerName);
+        if(currentFulfillmentScanRecord.accessScannerName(null).length() < 2)
+            displayScannerNameWarning();
         else
-            displayScannerInitials();
+            displayScannerName();
 
         String lastUpdatedString = appConfig.accessString(appConfig.LAST_UPDATED, null, "");
         if(!MoreDateFunctions.getTodayYYMMDD().equals(lastUpdatedString))
@@ -270,9 +274,10 @@ public class FulfillmentScanActivity extends Activity
     {
         packDataAccess.read();
         packLineDataAccess.read();
-        configDataAccess.read();
         lensDataAccess.read();
         packagingDataAccess.read();
+        configDataAccess.read();
+        scannerDataAccess.read();
         fulfillmentScanHandler.openDBs();
         fulfillmentScanDataAccess.read();
     }
@@ -281,9 +286,10 @@ public class FulfillmentScanActivity extends Activity
     {
         packDataAccess.close();
         packLineDataAccess.close();
-        configDataAccess.close();
         lensDataAccess.close();
         packagingDataAccess.close();
+        configDataAccess.close();
+        scannerDataAccess.close();
         fulfillmentScanHandler.closeDBs();
         fulfillmentScanDataAccess.close();
     }
@@ -322,9 +328,9 @@ public class FulfillmentScanActivity extends Activity
                     alertError("Error: Customer not active");
                 break;
             case 1:
-                //No initials
-                alertError("Error: No initials");
-                promptInitials();
+                //No id
+                alertError("Error: No ID");
+                promptId();
                 break;
             case 2:
                 //Bad barcode
@@ -373,9 +379,9 @@ public class FulfillmentScanActivity extends Activity
                 listConfigs();
                 break;
             case 1:
-                //No initials
-                alertError("Error: No initials");
-                promptInitials();
+                //No id
+                alertError("Error: No ID");
+                promptId();
                 break;
             case 2:
                 //Bad barcode
@@ -546,50 +552,54 @@ public class FulfillmentScanActivity extends Activity
         possibleConfigListView.setAdapter(adapter);
     }
 
-    private void displayInitialsWarning()
+    private void displayScannerNameWarning()
     {
-        initialsTextView.setText("No initials");
-        initialsTextView.setBackgroundColor(Color.RED);
-        promptInitials();
+        scannerNameTextView.setText("Input ID");
+        scannerNameTextView.setBackgroundColor(Color.RED);
+        promptId();
     }
 
-    private void displayScannerInitials()
+    private void displayScannerName()
     {
-        initialsTextView.setText(currentFulfillmentScanRecord.accessScannerInitials(null));
-        initialsTextView.setBackgroundColor(Color.TRANSPARENT);
+        scannerNameTextView.setText(currentFulfillmentScanRecord.accessScannerName(null));
+        scannerNameTextView.setBackgroundColor(Color.TRANSPARENT);
     }
 
-    private void promptInitials()
+    private void promptId()
     {
-        AlertDialog.Builder initialDialog = new AlertDialog.Builder(this);
+        AlertDialog.Builder idDialog = new AlertDialog.Builder(this);
 
-        initialDialog.setTitle("Scanner Initials Entry");
-        initialDialog.setMessage("Enter initials");
+        idDialog.setTitle("Scanner ID Entry");
+        idDialog.setMessage("Enter ID");
 
         // Set an EditText view to get user input
         final EditText input = new EditText(this);
         input.setGravity(Gravity.CENTER);
-        input.setText(currentFulfillmentScanRecord.accessScannerInitials(null));
-        initialDialog.setView(input);
+        idDialog.setView(input);
 
-        initialDialog.setPositiveButton("OK", new DialogInterface.OnClickListener()
+        idDialog.setPositiveButton("OK", new DialogInterface.OnClickListener()
         {
             public void onClick(DialogInterface dialog, int whichButton)
             {
-                String scannerInitials = input.getText().toString();
-                currentFulfillmentScanRecord.accessScannerInitials(scannerInitials);
-                if(currentFulfillmentScanRecord.accessScannerInitials(null).length() < 2)
+                String scannerId = input.getText().toString();
+                ScannerRecord tempScannerRecord = new ScannerRecord();
+                if(tempScannerRecord.buildWithCursor(scannerDataAccess.selectByPk(scannerId)))
                 {
-                    displayInitialsWarning();
+                    String scannerName = tempScannerRecord.accessFullName(null);
+                    currentFulfillmentScanRecord.accessScannerName(scannerName);
+                    appConfig.accessString(DroidConfigManager.CURRENT_SCANNER_NAME, scannerName, "");
+                    displayScannerName();
                 }
                 else
                 {
-                    appConfig.accessString(DroidConfigManager.CURRENT_SCANNER_INITIALS, currentFulfillmentScanRecord.accessScannerInitials(null), "");
-                    displayScannerInitials();
+                    if(currentFulfillmentScanRecord.accessScannerName(null).isEmpty())
+                        displayScannerNameWarning();
+                    else
+                        displayScannerName();
                 }
             }
         });
-        initialDialog.show();
+        idDialog.show();
     }
 
     private class ConfigRecordArrayAdapter extends ArrayAdapter<ConfigRecord>

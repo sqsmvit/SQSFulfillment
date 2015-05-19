@@ -72,6 +72,7 @@ public class DropboxManager
     public void writeToStorage(String dbxFilePath, String downloadPath)
     {
         Log.d(TAG, "writeToStorage begin");
+        clearCache();
         DbxPath dropboxPath = new DbxPath(dbxFilePath);
         try
         {
@@ -102,6 +103,7 @@ public class DropboxManager
                 Log.e(TAG, "writeToStorage: IOException");
             }
             inFile.close();
+            clearCache();
             Log.d(TAG, "writeToStorage end");
         }
         catch(DbxException e)

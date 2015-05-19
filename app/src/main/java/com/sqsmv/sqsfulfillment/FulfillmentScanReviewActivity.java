@@ -88,7 +88,7 @@ public class FulfillmentScanReviewActivity extends Activity
                 DropboxManager dropboxManager = new DropboxManager(this);
                 dropboxManager.writeToDropbox(exportFile, File.separator + "fulfillments" + File.separator + exportFile.getName(), true);
                 updateFulfilledInvoiceList();
-                appConfig.accessString(DroidConfigManager.CURRENT_SCANNER_INITIALS, "", "");
+                appConfig.accessString(DroidConfigManager.CURRENT_SCANNER_NAME, "", "");
             }
             catch(IOException e)
             {

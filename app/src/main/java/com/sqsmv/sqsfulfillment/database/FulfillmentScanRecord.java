@@ -10,8 +10,9 @@ public class FulfillmentScanRecord implements DataRecord
     private String _id;
     private String fkInvoiceId;
     private String scanDate;
-    private String scannerInitials;
+    private String scannerName;
     private String fkConfigId;
+    private String fkORPackId;
     private String scannedPackName;
 
     public FulfillmentScanRecord()
@@ -19,35 +20,38 @@ public class FulfillmentScanRecord implements DataRecord
         _id = "";
         fkInvoiceId = "";
         scanDate = "";
-        scannerInitials = "";
+        scannerName = "";
         fkConfigId = "";
+        fkORPackId = "";
         scannedPackName = "";
     }
 
-    public FulfillmentScanRecord(String invoiceId, String date, String initials, String configId, String packName)
+    public FulfillmentScanRecord(String invoiceId, String date, String name, String configId, String orPackId, String packName)
     {
         _id = "null";
         fkInvoiceId = invoiceId;
         scanDate = date;
-        scannerInitials = initials;
+        scannerName = name;
         fkConfigId = configId;
+        fkORPackId = orPackId;
         scannedPackName = packName;
     }
 
-    public FulfillmentScanRecord(String id, String invoiceId, String date, String initials, String configId, String packName)
+    public FulfillmentScanRecord(String recId, String invoiceId, String date, String name, String configId, String orPackId, String packName)
     {
-        _id = id;
+        _id = recId;
         fkInvoiceId = invoiceId;
         scanDate = date;
-        scannerInitials = initials;
+        scannerName = name;
         fkConfigId = configId;
+        fkORPackId = orPackId;
         scannedPackName = packName;
     }
 
-    public String access_Id(String id)
+    public String access_Id(String recId)
     {
-        if(id != null)
-            _id = id;
+        if(recId != null)
+            _id = recId;
         return _id;
     }
 
@@ -65,11 +69,11 @@ public class FulfillmentScanRecord implements DataRecord
         return scanDate;
     }
 
-    public String accessScannerInitials(String initials)
+    public String accessScannerName(String name)
     {
-        if(initials != null)
-            scannerInitials = initials;
-        return scannerInitials;
+        if(name != null)
+            scannerName = name;
+        return scannerName;
     }
 
     public String accessFkConfigId(String configId)
@@ -77,6 +81,13 @@ public class FulfillmentScanRecord implements DataRecord
         if(configId != null)
             fkConfigId = configId;
         return fkConfigId;
+    }
+
+    public String accessFkORPackId(String orPackId)
+    {
+        if(orPackId != null)
+            fkORPackId = orPackId;
+        return fkORPackId;
     }
 
     public String accessScannedPackName(String packName)
@@ -89,7 +100,7 @@ public class FulfillmentScanRecord implements DataRecord
     @Override
     public DataRecord newCopy()
     {
-        return new FulfillmentScanRecord(_id, fkInvoiceId, scanDate, scannerInitials, fkConfigId, scannedPackName);
+        return new FulfillmentScanRecord(_id, fkInvoiceId, scanDate, scannerName, fkConfigId, fkORPackId, scannedPackName);
     }
 
     @Override
@@ -106,11 +117,14 @@ public class FulfillmentScanRecord implements DataRecord
             case FulfillmentScanContract.COLUMN_NAME_SCANDATE:
                 accessScanDate(data);
                 break;
-            case FulfillmentScanContract.COLUMN_NAME_SCANNERINITIALS:
-                accessScannerInitials(data);
+            case FulfillmentScanContract.COLUMN_NAME_SCANNERNAME:
+                accessScannerName(data);
                 break;
             case FulfillmentScanContract.COLUMN_NAME_FKCONFIGID:
                 accessFkConfigId(data);
+                break;
+            case FulfillmentScanContract.COLUMN_NAME_FKORPACKID:
+                accessFkORPackId(data);
                 break;
             case FulfillmentScanContract.COLUMN_NAME_SCANNEDPACKNAME:
                 accessScannedPackName(data);
@@ -134,11 +148,14 @@ public class FulfillmentScanRecord implements DataRecord
             case FulfillmentScanContract.COLUMN_NAME_SCANDATE:
                 value = accessScanDate(null);
                 break;
-            case FulfillmentScanContract.COLUMN_NAME_SCANNERINITIALS:
-                value = accessScannerInitials(null);
+            case FulfillmentScanContract.COLUMN_NAME_SCANNERNAME:
+                value = accessScannerName(null);
                 break;
             case FulfillmentScanContract.COLUMN_NAME_FKCONFIGID:
                 value = accessFkConfigId(null);
+                break;
+            case FulfillmentScanContract.COLUMN_NAME_FKORPACKID:
+                value = accessFkORPackId(null);
                 break;
             case FulfillmentScanContract.COLUMN_NAME_SCANNEDPACKNAME:
                 value = accessScannedPackName(null);
@@ -172,8 +189,9 @@ public class FulfillmentScanRecord implements DataRecord
         access_Id("");
         accessFkInvoiceId("");
         accessScanDate("");
-        accessScannerInitials("");
+        accessScannerName("");
         accessFkConfigId("");
+        accessFkORPackId("");
         accessScannedPackName("");
     }
 
@@ -183,6 +201,7 @@ public class FulfillmentScanRecord implements DataRecord
         accessFkInvoiceId("");
         accessScanDate("");
         accessFkConfigId("");
+        accessFkORPackId("");
         accessScannedPackName("");
     }
 }

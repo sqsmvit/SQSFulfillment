@@ -6,7 +6,7 @@ import android.content.Intent;
 
 public class DatabaseUpdateLauncher
 {
-    public static void startDBUpdate(final Context context)
+    public static Thread startDBUpdate(final Context context)
     {
         final ProgressDialog pausingDialog = ProgressDialog.show(context, "Updating", "Please Stay in Wifi Range...", true);
         final DroidConfigManager appConfig = new DroidConfigManager(context);
@@ -14,13 +14,16 @@ public class DatabaseUpdateLauncher
         context.startService(popIntent);
         appConfig.accessBoolean(DroidConfigManager.UPDATE_LOCK, true, true);
 
-        new Thread()
+        Thread pausingDialogThread = new Thread()
         {
+            @Override
             public void run()
             {
                 while(appConfig.accessBoolean(DroidConfigManager.UPDATE_LOCK, null, true));
                 pausingDialog.dismiss();
             }
-        }.start();
+        };
+        pausingDialogThread.start();
+        return pausingDialogThread;
     }
 }

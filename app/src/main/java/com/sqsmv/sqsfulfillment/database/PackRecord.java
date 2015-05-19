@@ -262,8 +262,8 @@ public class PackRecord implements DataRecord
             packOutput = accessPackName(null) + "\n" +
                     "\tQuantity: " + accessProdQuantity(null) +
                     "\n\tLine Items: " + accessNumPackLines(null) +
-                    "\n\tCount on Hand: " + accessCountOnHand(null) +
-                    "\n\tCount in Pulls: " + accessPullQueued(null);
+                    "\n\tStart of Day CoH: " + accessCountOnHand(null) +
+                    "\n\tStart of Day Pull Queue: " + accessPullQueued(null);
             if(accessIsValid(null).isEmpty())
                 packOutput = "Needs Validation: " + packOutput;
         }

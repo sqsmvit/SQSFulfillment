@@ -25,6 +25,7 @@ public class DBAdapter extends SQLiteOpenHelper
         db.execSQL(PackagingContract.CREATE_TABLE_PACKAGING);
         db.execSQL(LensContract.CREATE_TABLE_LENS);
         db.execSQL(ConfigContract.CREATE_TABLE_CONFIG);
+        db.execSQL(ScannerContract.CREATE_TABLE_SCANNER);
         //db.execSQL(PackRecreateRulesContract.CREATE_TABLE_PACKRECREATERULES);
         db.execSQL(FulfillmentScanContract.CREATE_TABLE_FULFILLMENTSCAN);
         //db.execSQL(PackRecreateScanContract.CREATE_TABLE_PACKRECREATESCAN);
@@ -54,6 +55,9 @@ public class DBAdapter extends SQLiteOpenHelper
 
         db.execSQL(ConfigContract.DROP_TABLE_CONFIG);
         db.execSQL(ConfigContract.CREATE_TABLE_CONFIG);
+
+        db.execSQL(ScannerContract.DROP_TABLE_SCANNER);
+        db.execSQL(ScannerContract.CREATE_TABLE_SCANNER);
 
         //db.execSQL(PackRecreateRulesContract.DROP_TABLE_PACKRECREATERULES);
         //db.execSQL(PackRecreateRulesContract.CREATE_TABLE_PACKRECREATERULES);
@@ -93,8 +97,8 @@ public class DBAdapter extends SQLiteOpenHelper
         db.execSQL(ConfigContract.DROP_TABLE_CONFIG);
         db.execSQL(ConfigContract.CREATE_TABLE_CONFIG);
 
-        db.execSQL(FulfillmentScanContract.DROP_TABLE_FULFILLMENTSCAN);
-        db.execSQL(FulfillmentScanContract.CREATE_TABLE_FULFILLMENTSCAN);
+        db.execSQL(ScannerContract.DROP_TABLE_SCANNER);
+        db.execSQL(ScannerContract.CREATE_TABLE_SCANNER);
 
         db.close();
     }

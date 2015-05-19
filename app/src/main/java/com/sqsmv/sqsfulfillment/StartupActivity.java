@@ -50,7 +50,7 @@ public class StartupActivity extends Activity
             @Override
             public void onClick(View v)
             {
-                launchFulfillmentScanActivity();
+                checkDailyTasks();
             }
         });
     }
@@ -59,14 +59,8 @@ public class StartupActivity extends Activity
     protected void onResume()
     {
         super.onResume();
-        if(dropboxManager.hasLinkedAccount())
-        {
-            checkNeedUpdateDatabase();
-        }
-        else
-        {
+        if(!dropboxManager.hasLinkedAccount())
             linkDropboxAccount();
-        }
     }
 
     @Override
@@ -75,10 +69,7 @@ public class StartupActivity extends Activity
         if(requestCode == 1)
         {
             if(resultCode == RESULT_OK)
-            {
                 dropboxManager.initDropboxFileSystem();
-                checkNeedUpdateDatabase();
-            }
             else
             {
                 QuickToast.makeToast(this, "Error Connecting to Dropbox");
@@ -113,7 +104,7 @@ public class StartupActivity extends Activity
         }
     }
 
-    private void checkNeedUpdateDatabase()
+    private void checkDailyTasks()
     {
         String today = MoreDateFunctions.getTodayYYMMDD();
         DroidConfigManager appConfig = new DroidConfigManager(this);
@@ -121,10 +112,32 @@ public class StartupActivity extends Activity
 
         if(!today.equals(lastUpdatedString))
         {
-            //Do update stuffs
             appConfig.accessString(appConfig.LAST_UPDATED, today, "");
-            DatabaseUpdateLauncher.startDBUpdate(this);
             FileHandling.cleanFolder(new File(Environment.getExternalStorageDirectory().toString() + "/FulfillBackups"), 180);
+            launchUpdate();
         }
+        else
+            launchFulfillmentScanActivity();
+    }
+
+    private void launchUpdate()
+    {
+        final Thread blockingThread = DatabaseUpdateLauncher.startDBUpdate(this);
+        new Thread()
+        {
+            @Override
+            public void run()
+            {
+                try
+                {
+                    blockingThread.join();
+                    launchFulfillmentScanActivity();
+                }
+                catch(InterruptedException e)
+                {
+                    e.printStackTrace();
+                }
+            }
+        }.start();
     }
 }

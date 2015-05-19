@@ -6,7 +6,7 @@ import android.content.SharedPreferences;
 public class DroidConfigManager
 {
     public final static String LAST_UPDATED = "lastUpdated";
-    public final static String CURRENT_SCANNER_INITIALS = "currentScannerInitials";
+    public final static String CURRENT_SCANNER_NAME = "currentScannerName";
     public final static String SCANNER_LOCK = "scannerLock";
     public final static String UPDATE_LOCK = "updateLock";
 
