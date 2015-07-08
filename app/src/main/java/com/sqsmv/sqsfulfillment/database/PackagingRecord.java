@@ -28,21 +28,27 @@ public class PackagingRecord implements DataRecord
     public String accessPkMasnum(String masnum)
     {
         if(masnum != null)
+        {
             pkMasnum = masnum;
+        }
         return pkMasnum;
     }
 
     public String accessPackagingName(String name)
     {
         if(name != null)
+        {
             packagingName = name;
+        }
         return packagingName;
     }
 
     public String accessSha(String shaVal)
     {
         if(shaVal != null)
+        {
             sha = shaVal;
+        }
         return sha;
     }
 
@@ -101,7 +107,9 @@ public class PackagingRecord implements DataRecord
             for(int count = 0; count < dbCursor.getColumnCount(); count++)
             {
                 if(columnList.contains(dbCursor.getColumnName(count)) && !dbCursor.getColumnName(count).equals(XMLFileContract.COLUMN_NAME_SHA))
+                {
                     success = true;
+                }
                 setValueByKey(dbCursor.getColumnName(count), dbCursor.getString(count));
             }
         }

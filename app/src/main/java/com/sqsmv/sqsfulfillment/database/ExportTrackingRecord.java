@@ -28,21 +28,27 @@ public class ExportTrackingRecord implements DataRecord
     public String accessPkDate(String date)
     {
         if(date != null)
+        {
             pkDate = date;
+        }
         return pkDate;
     }
 
     public int accessNumFulfillmentFiles(Integer numFulfillmentExports)
     {
         if(numFulfillmentExports != null)
+        {
             numFulfillmentFiles = numFulfillmentExports.intValue();
+        }
         return numFulfillmentFiles;
     }
 /*
     public int accessNumPackRecreateFiles(Integer numPackRecreateExports)
     {
         if(numPackRecreateExports != null)
+        {
             numPackRecreateFiles = numPackRecreateExports.intValue();
+        }
         return numPackRecreateFiles;
     }
 */
@@ -104,7 +110,9 @@ public class ExportTrackingRecord implements DataRecord
             for(int count = 0; count < dbCursor.getColumnCount(); count++)
             {
                 if(columnList.contains(dbCursor.getColumnName(count)))
+                {
                     success = true;
+                }
                 setValueByKey(dbCursor.getColumnName(count), dbCursor.getString(count));
             }
         }

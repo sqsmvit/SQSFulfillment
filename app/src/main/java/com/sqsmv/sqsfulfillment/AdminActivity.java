@@ -23,6 +23,7 @@ import java.util.HashMap;
 
 public class AdminActivity extends Activity
 {
+    UpdateLauncher updateLauncher;
     ArrayList<HashMap<String, String>> backupList;
     File backupDir;
 
@@ -32,11 +33,14 @@ public class AdminActivity extends Activity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_admin);
 
+        updateLauncher = new UpdateLauncher(this);
         backupDir = new File(Environment.getExternalStorageDirectory().toString() + "/FulfillBackups");
 
         Button adminBackButton = (Button)findViewById(R.id.AdminBackButton);
+
+        Button forceAppUpdateButton = (Button)findViewById(R.id.AppUpdateButton);
+        Button forceDBUpdateButton = (Button)findViewById(R.id.ForceUpdateButton);
         Button ResetDBButton = (Button)findViewById(R.id.ResetDBButton);
-        final Button forceDBUpdateButton = (Button)findViewById(R.id.ForceUpdateButton);
         ListView backupFileListView = (ListView)findViewById(R.id.BackupFileList);
 
         backupDir.mkdir();
@@ -55,6 +59,15 @@ public class AdminActivity extends Activity
             public void onClick(View v)
             {
                 onBackPressed();
+            }
+        });
+
+        forceAppUpdateButton.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                forceAppUpdate();
             }
         });
 
@@ -93,9 +106,9 @@ public class AdminActivity extends Activity
         HashMap<String, String> backupEntry;
         File[] files = directory.listFiles();
 
-        for (File file : files)
+        for(File file:files)
         {
-            backupEntry = new HashMap<String, String>();
+            backupEntry = new HashMap<>();
             backupEntry.put("fileName", file.getName());
             backupEntry.put("fileDate", MoreDateFunctions.formatDateAsSlashMMDDYY(new Date(file.lastModified())));
             backupEntry.put("fileSize", String.format("%.2f",(file.length()/1024.0)) + "kb");
@@ -105,9 +118,17 @@ public class AdminActivity extends Activity
         return fileInfoList;
     }
 
+    private void forceAppUpdate()
+    {
+        if(updateLauncher.checkNeedAppUpdate())
+        {
+            updateLauncher.startAppUpdate();
+        }
+    }
+
     private void forceDBUpdate()
     {
-        DatabaseUpdateLauncher.startDBUpdate(this);
+        updateLauncher.startDBUpdate();
     }
 
     //Resets the tables that need to drop old information
@@ -146,7 +167,7 @@ public class AdminActivity extends Activity
                     }
                 });
         // create alert dialog
-        AlertDialog alertDialog = alertDialogBuilder.create();
-        alertDialog.show();
+        AlertDialog exportBackupDialog = alertDialogBuilder.create();
+        exportBackupDialog.show();
     }
 }

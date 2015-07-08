@@ -7,6 +7,7 @@ import android.util.Log;
 import com.dropbox.sync.android.DbxAccountManager;
 import com.dropbox.sync.android.DbxException;
 import com.dropbox.sync.android.DbxFile;
+import com.dropbox.sync.android.DbxFileInfo;
 import com.dropbox.sync.android.DbxFileSystem;
 import com.dropbox.sync.android.DbxPath;
 
@@ -26,7 +27,7 @@ public class DropboxManager
     private DbxAccountManager dbxAccountManager;
     private DbxFileSystem dbxFileSystem;
 
-    DropboxManager(Context activityContext)
+    public DropboxManager(Context activityContext)
     {
         context = activityContext;
 
@@ -46,7 +47,7 @@ public class DropboxManager
         boolean accountLinked = false;
         if(!hasLinkedAccount())
         {
-            dbxAccountManager.startLink((Activity)context, 1);
+            dbxAccountManager.startLink((Activity) context, 1);
             accountLinked = true;
         }
         return accountLinked;
@@ -136,6 +137,25 @@ public class DropboxManager
         {
             e.printStackTrace();
         }
+    }
+
+    public DbxFileInfo getDbxFileInfo(String dbxFilePath)
+    {
+        DbxFileInfo dbxFileInfo = null;
+        clearCache();
+        DbxPath dropboxPath = new DbxPath(dbxFilePath);
+        try
+        {
+            DbxFile dbxFile = dbxFileSystem.open(dropboxPath);
+            dbxFile.getNewerStatus();
+            dbxFileInfo = dbxFile.getInfo();
+            dbxFile.close();
+        }
+        catch(DbxException e)
+        {
+            e.printStackTrace();
+        }
+        return dbxFileInfo;
     }
 
     private void clearCache()

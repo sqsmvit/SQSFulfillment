@@ -38,42 +38,54 @@ public class PackLineRecord implements DataRecord
     public String accessPkPackLineId(String packLineId)
     {
         if(packLineId != null)
+        {
             pkPackLineId = packLineId;
+        }
         return pkPackLineId;
     }
 
     public String accessFkPackId(String packId)
     {
         if(packId != null)
+        {
             fkPackId = packId;
+        }
         return fkPackId;
     }
 
     public String accessProductName(String name)
     {
         if(name != null)
+        {
             productName = name;
+        }
         return productName;
     }
 
     public int accessQuantity(Integer totalQuantity)
     {
         if(totalQuantity != null)
+        {
             quantity = totalQuantity.intValue();
+        }
         return quantity;
     }
 
     public String accessPricePoint(String packLinePricePoint)
     {
         if(packLinePricePoint != null)
+        {
             pricePoint = packLinePricePoint;
+        }
         return pricePoint;
     }
 
     public String accessSha(String shaVal)
     {
         if(shaVal != null)
+        {
             sha = shaVal;
+        }
         return sha;
     }
 
@@ -150,7 +162,9 @@ public class PackLineRecord implements DataRecord
             for(int count = 0; count < dbCursor.getColumnCount(); count++)
             {
                 if(columnList.contains(dbCursor.getColumnName(count)) && !dbCursor.getColumnName(count).equals(XMLFileContract.COLUMN_NAME_SHA))
+                {
                     success = true;
+                }
                 setValueByKey(dbCursor.getColumnName(count), dbCursor.getString(count));
             }
         }
@@ -181,11 +195,15 @@ public class PackLineRecord implements DataRecord
             for(int count = 0; count < dbCursor.getColumnCount(); count++)
             {
                 if(columnList.contains(dbCursor.getColumnName(count)) && !dbCursor.getColumnName(count).equals(XMLFileContract.COLUMN_NAME_SHA))
+                {
                     success = true;
+                }
                 newPackLineRecord.setValueByKey(dbCursor.getColumnName(count), dbCursor.getString(count));
             }
             if(success)
+            {
                 packLineRecords.add(newPackLineRecord);
+            }
         }
         dbCursor.close();
         return packLineRecords;

@@ -43,56 +43,72 @@ public class ShipToRecord implements DataRecord
     public String accessPkShipToId(String shipToId)
     {
         if(shipToId != null)
+        {
             pkShipToId = shipToId;
+        }
         return pkShipToId;
     }
 
     public String accessShipName(String name)
     {
         if(name != null)
+        {
             shipName = name;
+        }
         return shipName;
     }
 
     public String accessShipAddress(String address)
     {
         if(address != null)
+        {
             shipAddress = address;
+        }
         return shipAddress;
     }
 
     public String accessShipCity(String city)
     {
         if(city != null)
+        {
             shipCity = city;
+        }
         return shipCity;
     }
 
     public String accessShipState(String state)
     {
         if(state != null)
+        {
             shipState = state;
+        }
         return shipState;
     }
 
     public String accessShipZip(String zip)
     {
         if(zip != null)
+        {
             shipZip = zip;
+        }
         return shipZip;
     }
 
     public String accessIsActive(String isActiveCustomer)
     {
         if(isActiveCustomer != null)
+        {
             isActive = isActiveCustomer;
+        }
         return isActive;
     }
 
     public String accessSha(String shaVal)
     {
         if(shaVal != null)
+        {
             sha = shaVal;
+        }
         return sha;
     }
 
@@ -181,7 +197,9 @@ public class ShipToRecord implements DataRecord
             for(int count = 0; count < dbCursor.getColumnCount(); count++)
             {
                 if(columnList.contains(dbCursor.getColumnName(count)) && !dbCursor.getColumnName(count).equals(XMLFileContract.COLUMN_NAME_SHA))
+                {
                     success = true;
+                }
                 setValueByKey(dbCursor.getColumnName(count), dbCursor.getString(count));
             }
         }

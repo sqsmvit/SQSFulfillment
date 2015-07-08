@@ -63,9 +63,10 @@ public class FulfillmentScanHandler
         fulfillmentScanDataAccess.close();
     }
 
-    public int handleRegularScan(String scanData)
+    public FulfillmentScanReturn handleRegularScan(String scanData)
     {
-        int response = 0;
+        FulfillmentScanReturn response = FulfillmentScanReturn.DISPLAY_SCAN;
+        //int response = 0;
 
         if(!currentFulfillmentScanRecord.accessScannerName(null).isEmpty())
         {
@@ -82,18 +83,22 @@ public class FulfillmentScanHandler
                         if(currentPackRecord.accessIsValid(null).isEmpty())
                         {
                             currentInvoiceRecord.accessFkPackId("");
-                            response = 5; //Pack needs validation
+                            response = FulfillmentScanReturn.PACK_NEEDS_VALIDATION;
                         }
                         else if(currentPackRecord.accessIsDouble(null).equals("1"))
-                            response = 6; //Double pack
+                        {
+                            response = FulfillmentScanReturn.DOUBLE_PACK_SCANNED;
+                        }
                     }
                     else
-                        response = 4; //Pack not found
+                    {
+                        response = FulfillmentScanReturn.PACK_NOT_FOUND;
+                    }
                 }
                 else
                 {
                     currentInvoiceRecord.clearRecord();
-                    response = 3; //Bad invoice
+                    response = FulfillmentScanReturn.BAD_INVOICE;
                 }
             }
             else if(packMatcher.find())
@@ -116,24 +121,30 @@ public class FulfillmentScanHandler
                     if(packId.equals(currentInvoiceRecord.accessFkPackId(null)))
                     {
                         insertRegularScan();
-                        response = -1;
+                        response = FulfillmentScanReturn.SCAN_INSERTED;
                     }
                     else
-                        response = 7; //Wrong pack
+                    {
+                        response = FulfillmentScanReturn.WRONG_PACK_SCANNED;
+                    }
                 }
             }
             else
-                response = 2; //Bad barcode
+            {
+                response = FulfillmentScanReturn.BAD_BARCODE;
+            }
         }
         else
-            response = 1; //No id
+        {
+            response = FulfillmentScanReturn.NO_ID;
+        }
 
         return response;
     }
 
-    public int handleDoubleScan(String scanData, ArrayList<PackRecord> scannedPacks, ArrayList<ConfigRecord> possibleConfigs)
+    public FulfillmentScanReturn handleDoubleScan(String scanData, ArrayList<PackRecord> scannedPacks, ArrayList<ConfigRecord> possibleConfigs)
     {
-        int response = 0;
+        FulfillmentScanReturn response = FulfillmentScanReturn.DISPLAY_SCAN;
 
         if(!currentFulfillmentScanRecord.accessScannerName(null).isEmpty())
         {
@@ -156,9 +167,13 @@ public class FulfillmentScanHandler
                         for(ConfigRecord config : possibleConfigs)
                         {
                             if(!config.hasConfigPackId(packId))
+                            {
                                 tempConfigList.remove(config);
+                            }
                             else if(config.matchesConfigPackIds(scannedPackIds))
+                            {
                                 fulfilledConfig = config;
+                            }
 
                         }
                         if(fulfilledConfig != null)
@@ -167,11 +182,11 @@ public class FulfillmentScanHandler
                             {
                                 currentFulfillmentScanRecord.accessFkConfigId(fulfilledConfig.accessPkConfigId(null));
                                 insertRegularScan();
-                                response = -1;
+                                response = FulfillmentScanReturn.SCAN_INSERTED;
                             }
                             else
                             {
-                                response = 6; //Invalid config
+                                response = FulfillmentScanReturn.CONFIG_NEEDS_VALIDATION;
                                 scannedPacks.add(tempPackRecord);
                                 possibleConfigs.clear();
                                 possibleConfigs.add(fulfilledConfig);
@@ -185,19 +200,29 @@ public class FulfillmentScanHandler
                             possibleConfigs.addAll(tempConfigList);
                         }
                         else
-                            response = 5; //Wrong pack
+                        {
+                            response = FulfillmentScanReturn.WRONG_PACK_SCANNED;
+                        }
                     }
                     else
-                        response = 4; //Invalid pack
+                    {
+                        response = FulfillmentScanReturn.PACK_NEEDS_VALIDATION;
+                    }
                 }
                 else
-                    response = 3; //Pack not found
+                {
+                    response = FulfillmentScanReturn.PACK_NOT_FOUND;
+                }
             }
             else
-                response = 2; //Bad barcode
+            {
+                response = FulfillmentScanReturn.BAD_BARCODE;
+            }
         }
         else
-            response = 1; //No id
+        {
+            response = FulfillmentScanReturn.NO_ID;
+        }
 
         return response;
     }
@@ -206,7 +231,9 @@ public class FulfillmentScanHandler
     {
         ArrayList<String> packIDList = new ArrayList<>();
         for(PackRecord pack : packList)
+        {
             packIDList.add(pack.accessPkPackId(null));
+        }
         return packIDList;
     }
 
@@ -216,7 +243,9 @@ public class FulfillmentScanHandler
         currentShipToRecord.clearRecord();
         currentPackRecord.clearRecord();
         if(!currentShipToRecord.buildWithCursor(shipToDataAccess.selectByPk(currentInvoiceRecord.accessFkShipToId(null))))
+        {
             currentShipToRecord.accessShipName("Shipping Address not found. ID: " + currentInvoiceRecord.accessFkShipToId(null));
+        }
         if(!currentPackRecord.buildWithCursor(packDataAccess.selectByPk(currentInvoiceRecord.accessFkPackId(null))))
         {
             success = false;

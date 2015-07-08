@@ -13,18 +13,18 @@ import java.util.Locale;
  */
 public final class MoreDateFunctions
 {
-    private final static SimpleDateFormat dateFormat = new SimpleDateFormat("yyMMdd", Locale.US);
-    private final static SimpleDateFormat slashDateFormat = new SimpleDateFormat("MM/dd/yy", Locale.US);
-    private final static SimpleDateFormat timestampFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss a", Locale.US);
-    private final static SimpleDateFormat fmTimestampFormat = new SimpleDateFormat("MM/dd/yyyy hh:mm:ss a", Locale.US);
-    private final static SimpleDateFormat fileTimestampFormat = new SimpleDateFormat("yyMMdd_kkmm", Locale.US);
+    private final static SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyMMdd", Locale.US);
+    private final static SimpleDateFormat SLASH_DATE_FORMAT = new SimpleDateFormat("MM/dd/yy", Locale.US);
+    private final static SimpleDateFormat TIMESTAMP_FORMAT = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss a", Locale.US);
+    private final static SimpleDateFormat FM_TIMESTAMP_FORMAT = new SimpleDateFormat("yyyy/MM/dd hh:mm:ss a", Locale.US);
+    private final static SimpleDateFormat FILE_TIMESTAMP_FORMAT = new SimpleDateFormat("yyMMdd_kkmm", Locale.US);
 
 
     /**
-     * Takes the difference of two Dates and displays the result in days.
-     * @param subtrFromDate - Date to subtract from
-     * @param subtrWithDate - Date to subtract with
-     * @return double
+     * Calculates the difference of two Dates in days.
+     * @param subtrFromDate     Date to subtract from
+     * @param subtrWithDate     Date to subtract with
+     * @return The difference in days
      */
     public static double timeDiffInDays(Date subtrFromDate, Date subtrWithDate)
     {
@@ -32,10 +32,10 @@ public final class MoreDateFunctions
     }
 
     /**
-     * Takes the difference of two Dates and displays the result in hours.
-     * @param subtrFromDate - Date to subtract from
-     * @param subtrWithDate - Date to subtract with
-     * @return double
+     * Calculates the difference of two Dates in hours.
+     * @param subtrFromDate     Date to subtract from
+     * @param subtrWithDate     Date to subtract with
+     * @return The difference in hours
      */
     public static double timeDiffInHours(Date subtrFromDate, Date subtrWithDate)
     {
@@ -43,10 +43,10 @@ public final class MoreDateFunctions
     }
 
     /**
-     * Takes the difference of two Dates and displays the result in minutes.
-     * @param subtrFromDate - Date to subtract from
-     * @param subtrWithDate - Date to subtract with
-     * @return double
+     * Calculates the difference of two Dates in minutes.
+     * @param subtrFromDate     Date to subtract from
+     * @param subtrWithDate     Date to subtract with
+     * @return The difference in minutes
      */
     public static double timeDiffInMinutes(Date subtrFromDate, Date subtrWithDate)
     {
@@ -54,10 +54,10 @@ public final class MoreDateFunctions
     }
 
     /**
-     * Takes the difference of two Dates and displays the result in seconds.
-     * @param subtrFromDate - Date to subtract from
-     * @param subtrWithDate - Date to subtract with
-     * @return double
+     * Calculates the difference of two Dates in seconds.
+     * @param subtrFromDate     Date to subtract from
+     * @param subtrWithDate     Date to subtract with
+     * @return The difference in seconds
      */
     public static double timeDiffInSeconds(Date subtrFromDate, Date subtrWithDate)
     {
@@ -65,9 +65,9 @@ public final class MoreDateFunctions
     }
 
     /**
-     * Rounds the time down to the nearest quarter hour.
-     * @param roundDate - Time to round down
-     * @return Date
+     * Rounds the time in a Date object down to the nearest quarter hour.
+     * @param roundDate     Date to round down
+     * @return The Date object with time rounded down
      */
     public static Date roundDownToQuarterHour(Date roundDate)
     {
@@ -83,17 +83,19 @@ public final class MoreDateFunctions
     }
 
     /**
-     * Rounds the time to the nearest hour.
-     * @param roundDate - Time to round
-     * @return Date
+     * Rounds the time in a Date object to the nearest hour.
+     * @param roundDate     Date to round
+     * @return The Date object with time rounded
      */
     public static Date roundToHour(Date roundDate)
     {
         Calendar calendar = new GregorianCalendar();
         calendar.setTime(roundDate);
 
-        if (calendar.get(Calendar.MINUTE) >= 30)
+        if(calendar.get(Calendar.MINUTE) >= 30)
+        {
             calendar.add(Calendar.HOUR, 1);
+        }
 
         calendar.set(Calendar.MINUTE, 0);
         calendar.set(Calendar.SECOND, 0);
@@ -102,77 +104,97 @@ public final class MoreDateFunctions
     }
 
     /**
-     * Formats a Date as a human readable time stamp
-     * @param formatDate - Date to format
-     * @return String
+     * Formats a Date as human readable YYMMDD text.
+     * @param formatDate     Date to format
+     * @return The Date as YYMMDD formatted text
+     */
+    public static String formatDateAsYYMMDD(Date formatDate)
+    {
+        return DATE_FORMAT.format(formatDate);
+    }
+
+    /**
+     * Formats a Date as a human readable timestamp.
+     * @param formatDate     Date to format
+     * @return The Date as a timestamp
      */
     public static String formatDateAsTimestamp(Date formatDate)
     {
-        return timestampFormat.format(formatDate);
+        return TIMESTAMP_FORMAT.format(formatDate);
     }
 
     /**
-     * Formats a Date as a human readable MM/DD/YY
-     * @param formatDate - Date to format
-     * @return String
+     * Formats a Date as a file name friendly timestamp.
+     * @param formatDate     Date to format
+     * @return The Date as a file name friendly timestamp
+     */
+    public static String formatDateAsFileTimestamp(Date formatDate)
+    {
+        return FILE_TIMESTAMP_FORMAT.format(new Date());
+    }
+
+    /**
+     * Formats a Date as human readable MM/DD/YY text.
+     * @param formatDate     Date to format
+     * @return The Date as MM/DD/YY formatted text
      */
     public static String formatDateAsSlashMMDDYY(Date formatDate)
     {
-        return slashDateFormat.format(formatDate);
+        return SLASH_DATE_FORMAT.format(formatDate);
     }
 
     /**
-     * Formats current date as YYMMDD
-     * @return String
+     * Gets the current date as human readable YYMMDD text.
+     * @return The current date as YYMMDD formatted text
      */
     public static String getTodayYYMMDD()
     {
-        return (dateFormat.format(new Date()));
+        return DATE_FORMAT.format(new Date());
     }
 
     /**
-     * Formats current date as MM/DD/YY
-     * @return String
+     * Gets the current date as human readable MM/DD/YY text.
+     * @return The current date as MM/DD/YY formatted text
      */
     public static String getTodaySlashMMDDYY()
     {
-        return (slashDateFormat.format(new Date()));
+        return SLASH_DATE_FORMAT.format(new Date());
     }
 
     /**
-     * Formats current date as a timestamp
-     * @return String
+     * Gets the current date and time as a human readable timestamp.
+     * @return The current date and time as a timestamp
      */
     public static String getNowTimestamp()
     {
-        return (timestampFormat.format(new Date()));
+        return TIMESTAMP_FORMAT.format(new Date());
     }
 
     /**
-     * Formats current date as a file friendly timestamp
-     * @return String
-     */
-    public static String getNowFileTimestamp()
-    {
-        return (fileTimestampFormat.format(new Date()));
-    }
-
-    /**
-     * Formats current date as a filemaker timestamp
-     * @return String
+     * Gets the current date and time as a human readable FileMaker timestamp.
+     * @return The current date and time as a FileMaker timestamp
      */
     public static String getNowFMTimestamp()
     {
-        return (fmTimestampFormat.format(new Date()));
+        return FM_TIMESTAMP_FORMAT.format(new Date());
     }
 
     /**
-     * Parses Date from YYMMDD String
-     * @param dateString - YYMMDD formatted date String
-     * @return Date
+     * Gets the current date and time as a file name friendly timestamp.
+     * @return The current date and time as a file name timestamp
+     */
+    public static String getNowFileTimestamp()
+    {
+        return FILE_TIMESTAMP_FORMAT.format(new Date());
+    }
+
+    /**
+     * Parses a Date from a YYMMDD formatted String.
+     * @param dateString     YYMMDD formatted date String
+     * @return Parsed Date object
      */
     public static Date getDateFromYYMMDD(String dateString) throws ParseException
     {
-        return dateFormat.parse(dateString);
+        return DATE_FORMAT.parse(dateString);
     }
 }

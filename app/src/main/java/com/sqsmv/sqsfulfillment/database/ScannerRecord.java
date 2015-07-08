@@ -34,35 +34,45 @@ public class ScannerRecord implements DataRecord
     public String accessPkScannerId(String scannerId)
     {
         if(scannerId != null)
+        {
             pkScannerId = scannerId;
+        }
         return pkScannerId;
     }
 
     public String accessFullName(String name)
     {
         if(name != null)
+        {
             fullName = name;
+        }
         return fullName;
     }
 
     public String accessIsManagement(String isManager)
     {
         if(isManager != null)
+        {
             isManagement = isManager;
+        }
         return isManagement;
     }
 
     public String accessIsTemp(String isTempEployee)
     {
         if(isTempEployee != null)
+        {
             isTemp = isTempEployee;
+        }
         return isTemp;
     }
 
     public String accessSha(String shaVal)
     {
         if(shaVal != null)
+        {
             sha = shaVal;
+        }
         return sha;
     }
 
@@ -132,7 +142,9 @@ public class ScannerRecord implements DataRecord
             for(int count = 0; count < dbCursor.getColumnCount(); count++)
             {
                 if(columnList.contains(dbCursor.getColumnName(count)) && !dbCursor.getColumnName(count).equals(XMLFileContract.COLUMN_NAME_SHA))
+                {
                     success = true;
+                }
                 setValueByKey(dbCursor.getColumnName(count), dbCursor.getString(count));
             }
         }

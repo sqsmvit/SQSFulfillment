@@ -50,77 +50,99 @@ public class PackRecord implements DataRecord
     public String accessPkPackId(String packId)
     {
         if(packId != null)
+        {
             pkPackId = packId;
+        }
         return pkPackId;
     }
 
     public String accessFkLensId(String lensId)
     {
         if(lensId != null)
+        {
             fkLensId = lensId;
+        }
         return fkLensId;
     }
 
     public String accessFkBoxMasnum(String boxMasnum)
     {
         if(boxMasnum != null)
+        {
             fkBoxMasnum = boxMasnum;
+        }
         return fkBoxMasnum;
     }
 
     public String accessPackName(String name)
     {
         if(name != null)
+        {
             packName = name;
+        }
         return packName;
     }
 
     public int accessProdQuantity(Integer totalQuantity)
     {
         if(totalQuantity != null)
+        {
             prodQuantity = totalQuantity.intValue();
+        }
         return prodQuantity;
     }
 
     public int accessNumPackLines(Integer numLines)
     {
         if(numLines != null)
+        {
             numPackLines = numLines.intValue();
+        }
         return numPackLines;
     }
 
     public String accessIsDouble(String isDoublePack)
     {
         if(isDoublePack != null)
+        {
             isDouble = isDoublePack;
+        }
         return isDouble;
     }
 
     public String accessIsValid(String isValidPack)
     {
         if(isValidPack != null)
+        {
             isValid = isValidPack;
+        }
         return isValid;
     }
 
     public String accessCountOnHand(String inventoryCount)
     {
         if(inventoryCount != null)
+        {
             countOnHand = inventoryCount;
+        }
         return countOnHand;
     }
 
     public String accessPullQueued(String pullCount)
     {
         if(pullCount != null)
+        {
             pullQueued = pullCount;
+        }
         return pullQueued;
     }
 
     public String accessSha(String shaVal)
     {
         if(shaVal != null)
+        {
             sha = shaVal;
+        }
         return sha;
     }
 
@@ -227,7 +249,9 @@ public class PackRecord implements DataRecord
             for(int count = 0; count < dbCursor.getColumnCount(); count++)
             {
                 if(columnList.contains(dbCursor.getColumnName(count)) && !dbCursor.getColumnName(count).equals(XMLFileContract.COLUMN_NAME_SHA))
+                {
                     success = true;
+                }
                 setValueByKey(dbCursor.getColumnName(count), dbCursor.getString(count));
             }
         }
@@ -265,7 +289,9 @@ public class PackRecord implements DataRecord
                     "\n\tStart of Day CoH: " + accessCountOnHand(null) +
                     "\n\tStart of Day Pull Queue: " + accessPullQueued(null);
             if(accessIsValid(null).isEmpty())
+            {
                 packOutput = "Needs Validation: " + packOutput;
+            }
         }
 
         return packOutput;

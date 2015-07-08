@@ -24,7 +24,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/InstructionsHeader"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="@string/instructionsText"/>
+        android:text="@string/scan_instructions"/>
 
     <Button
         android:id="@+id/LaunchFulfillmentScanButton"
@@ -40,5 +40,13 @@
         android:layout_marginBottom="@dimen/half_activity_vertical_margin"
         android:layout_above="@id/LaunchFulfillmentScanButton"
         android:text="Scanner Pairing/Troubleshooting" />
+
+    <TextView
+        android:id="@+id/VersionText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:textAppearance="?android:attr/textAppearanceSmall" />
 
 </RelativeLayout>

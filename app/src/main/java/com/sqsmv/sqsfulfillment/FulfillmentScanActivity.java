@@ -15,6 +15,7 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Vibrator;
+import android.text.InputType;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -204,13 +205,19 @@ public class FulfillmentScanActivity extends Activity
         String scannerName = appConfig.accessString(DroidConfigManager.CURRENT_SCANNER_NAME, null, "");
         currentFulfillmentScanRecord.accessScannerName(scannerName);
         if(currentFulfillmentScanRecord.accessScannerName(null).length() < 2)
+        {
             displayScannerNameWarning();
+        }
         else
+        {
             displayScannerName();
+        }
 
         String lastUpdatedString = appConfig.accessString(appConfig.LAST_UPDATED, null, "");
         if(!MoreDateFunctions.getTodayYYMMDD().equals(lastUpdatedString))
+        {
             finish();
+        }
     }
 
     @Override
@@ -228,7 +235,9 @@ public class FulfillmentScanActivity extends Activity
         unregisterReceiver(receiver);
 
         if(!scannerLock)
+        {
             ScanAPIApplication.getApplicationInstance().forceRelease();
+        }
 
         super.onStop();
     }
@@ -256,7 +265,9 @@ public class FulfillmentScanActivity extends Activity
                 packLineString += "(" + packLineRecords.get(count).accessPricePoint(null) + ") " + packLineRecords.get(count).accessProductName(null) + " - " +
                         packLineRecords.get(count).accessQuantity(null);
                 if(count != packLineRecords.size() - 1)
+                {
                     packLineString += "\n";
+                }
             }
             AlertDialog.Builder packLineDialogBuilder = new AlertDialog.Builder(this);
 
@@ -310,97 +321,82 @@ public class FulfillmentScanActivity extends Activity
         }
     }
 
-    private void handleRegularScanResponse(int scanResponse)
+    private void handleRegularScanResponse(FulfillmentScanReturn scanResponse)
     {
         switch(scanResponse)
         {
-            case -1:
-                //Scan inserted
+            case SCAN_INSERTED:
                 resetButton.setVisibility(View.GONE);
                 readyForNextScan();
                 displayTotalFulfillments();
                 break;
-            case 0:
-                //Good scan, display info
+            case DISPLAY_SCAN:
                 resetButton.setVisibility(View.VISIBLE);
                 displayData();
                 if(currentShipToRecord.accessIsActive(null).isEmpty() && !currentShipToRecord.accessPkShipToId(null).isEmpty())
+                {
                     alertError("Error: Customer not active");
+                }
                 break;
-            case 1:
-                //No id
+            case NO_ID:
                 alertError("Error: No ID");
                 promptId();
                 break;
-            case 2:
-                //Bad barcode
+            case BAD_BARCODE:
                 alertError("Error: Bad barcode");
                 break;
-            case 3:
-                //Bad invoice
+            case BAD_INVOICE:
                 alertError("Error: Bad invoice");
                 break;
-            case 4:
-                //Pack not found
+            case PACK_NOT_FOUND:
                 alertError("Error: Pack not found");
                 break;
-            case 5:
-                //Pack needs validation
+            case PACK_NEEDS_VALIDATION:
                 alertError("Error: Pack needs validation");
                 displayData();
                 break;
-            case 6:
-                //Double Pack scanned
+            case DOUBLE_PACK_SCANNED:
                 resetButton.setVisibility(View.VISIBLE);
                 displayData();
                 toggleDoubleMode();
                 break;
-            case 7:
-                //Wrong pack
+            case WRONG_PACK_SCANNED:
                 alertError("Error: Wrong pack scanned");
                 break;
         }
     }
 
-    private void handleDoubleScanResponse(int scanResponse)
+    private void handleDoubleScanResponse(FulfillmentScanReturn scanResponse)
     {
         switch(scanResponse)
         {
-            case -1:
-                //Scan inserted
+            case SCAN_INSERTED:
                 toggleDoubleMode();
                 scannedPacks.clear();
                 readyForNextScan();
                 displayTotalFulfillments();
                 break;
-            case 0:
-                //Good scan, display info
+            case DISPLAY_SCAN:
                 listScannedPacks();
                 listConfigs();
                 break;
-            case 1:
-                //No id
+            case NO_ID:
                 alertError("Error: No ID");
                 promptId();
                 break;
-            case 2:
-                //Bad barcode
+            case BAD_BARCODE:
                 alertError("Error: Not a pack");
                 break;
-            case 3:
-                //Pack not found
+            case PACK_NOT_FOUND:
                 alertError("Error: Pack not found");
                 break;
-            case 4:
-                //Pack needs validation
+            case PACK_NEEDS_VALIDATION:
                 alertError("Error: Pack needs validation");
                 break;
-            case 5:
-                //Wrong pack, but display info
+            case WRONG_PACK_SCANNED:
                 alertError("Error: Pack is not in any config");
                 break;
-            case 6:
-                //Config needs validation
+            case CONFIG_NEEDS_VALIDATION:
                 listScannedPacks();
                 listConfigs();
                 alertError("Error: Config needs validation");
@@ -436,16 +432,26 @@ public class FulfillmentScanActivity extends Activity
             LensRecord tempLensRecord = new LensRecord();
             String tempLensName;
             if(tempLensRecord.buildWithCursor(lensDataAccess.selectByPk(lensIds[count])))
+            {
                 tempLensName = tempLensRecord.accessLensName(null);
+            }
             else
+            {
                 tempLensName = "Lens ID: " + lensIds[count];
+            }
 
             if(count == 0)
+            {
                 lensNames += "\nLens: ";
+            }
             if(count < (lensIds.length - 1))
+            {
                 lensNames += tempLensName + ", ";
+            }
             else
+            {
                 lensNames += tempLensName;
+            }
         }
         return lensNames;
     }
@@ -456,7 +462,9 @@ public class FulfillmentScanActivity extends Activity
         PackagingRecord tempPackagingRecord = new PackagingRecord();
         tempPackagingRecord.buildWithCursor(packagingDataAccess.selectByPk(currentPackRecord.accessFkBoxMasnum(null)));
         if(!tempPackagingRecord.accessPackagingName(null).isEmpty())
+        {
             packagingString = tempPackagingRecord.accessPackagingName(null) + "\n";
+        }
         return packagingString;
     }
 
@@ -468,7 +476,9 @@ public class FulfillmentScanActivity extends Activity
         int minVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_RING)/3;
         int currentVolume = audioManager.getStreamVolume(AudioManager.STREAM_RING);
         if(minVolume > currentVolume)
+        {
             audioManager.setStreamVolume(AudioManager.STREAM_RING, minVolume, AudioManager.FLAG_ALLOW_RINGER_MODES);
+        }
 
         //Ring and vibrate
         Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
@@ -513,16 +523,22 @@ public class FulfillmentScanActivity extends Activity
             {
                 PackRecord tempPackRecord = new PackRecord();
                 if(!tempPackRecord.buildWithCursor(packDataAccess.selectByPk(id)))
+                {
                     recommendedDoublePackNames.add("Pack not found. ID: " + id);
+                }
                 else
+                {
                     recommendedDoublePackNames.add(tempPackRecord.accessPackName(null));
+                }
             }
             ArrayAdapter adapter = new ArrayAdapter(this, R.layout.row_simple_string, recommendedDoublePackNames);
 
             recommendedDoublePackListView.setAdapter(adapter);
         }
         else
+        {
             alertError("Error: Cannot find Recommended Config.\nPlease see Cory or Rich.");
+        }
     }
 
     private void listScannedPacks()
@@ -575,6 +591,7 @@ public class FulfillmentScanActivity extends Activity
         // Set an EditText view to get user input
         final EditText input = new EditText(this);
         input.setGravity(Gravity.CENTER);
+        input.setInputType(InputType.TYPE_CLASS_NUMBER);
         idDialog.setView(input);
 
         idDialog.setPositiveButton("OK", new DialogInterface.OnClickListener()
@@ -593,9 +610,9 @@ public class FulfillmentScanActivity extends Activity
                 else
                 {
                     if(currentFulfillmentScanRecord.accessScannerName(null).isEmpty())
+                    {
                         displayScannerNameWarning();
-                    else
-                        displayScannerName();
+                    }
                 }
             }
         });
@@ -632,15 +649,21 @@ public class FulfillmentScanActivity extends Activity
             {
                 PackRecord tempPackRecord = new PackRecord();
                 if(!tempPackRecord.buildWithCursor(packDataAccess.selectByPk(id)))
+                {
                     packName = "Pack not found. ID: " + id;
+                }
                 else
+                {
                     packName = tempPackRecord.accessPackName(null);
+                }
                 TextView packNameTextView = (TextView)inflater.inflate(R.layout.row_simple_string, null);
                 packNameTextView.setText(packName);
                 configPackLinearLayout.addView(packNameTextView);
             }
             if(tempConfigRecord.accessIsValid(null).isEmpty())
+            {
                 convertView.setBackgroundColor(Color.RED);
+            }
             return convertView;
         }
     }
@@ -652,21 +675,25 @@ public class FulfillmentScanActivity extends Activity
         @Override
         public void onReceive(Context c, Intent intent)
         {
-            if (intent.getAction().equalsIgnoreCase(ScanAPIApplication.NOTIFY_DECODED_DATA))
+            if(intent.getAction().equalsIgnoreCase(ScanAPIApplication.NOTIFY_DECODED_DATA))
             {
                 String scanData = new String(intent.getCharArrayExtra(ScanAPIApplication.EXTRA_DECODEDDATA));
 
                 //Scanned stuff
                 if(!doubleMode)
+                {
                     handleRegularScanResponse(fulfillmentScanHandler.handleRegularScan(scanData));
+                }
                 else
+                {
                     handleDoubleScanResponse(fulfillmentScanHandler.handleDoubleScan(scanData, scannedPacks, possibleConfigs));
+                }
             }
-            else if (intent.getAction().equalsIgnoreCase(ScanAPIApplication.NOTIFY_SCANNER_ARRIVAL))
+            else if(intent.getAction().equalsIgnoreCase(ScanAPIApplication.NOTIFY_SCANNER_ARRIVAL))
             {
                 QuickToast.makeToast(c, intent.getStringExtra(ScanAPIApplication.EXTRA_DEVICENAME) + " Connected");
             }
-            else if (intent.getAction().equalsIgnoreCase(ScanAPIApplication.NOTIFY_ERROR_MESSAGE))
+            else if(intent.getAction().equalsIgnoreCase(ScanAPIApplication.NOTIFY_ERROR_MESSAGE))
             {
                 QuickToast.makeLongToast(c, intent.getStringExtra(ScanAPIApplication.EXTRA_ERROR_MESSAGE));
             }

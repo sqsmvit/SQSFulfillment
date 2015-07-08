@@ -99,31 +99,43 @@ public class FMDumpHandler extends Thread
                                 //1st field
                                 eventType = xpp.nextTag();
                                 if(eventType == XmlPullParser.END_TAG)
+                                {
                                     xpp.nextTag();
+                                }
 
                                 String value;
                                 if(xpp.getName().equals(tag))
                                 {
                                     value = xpp.nextText();
                                     if(tag.toUpperCase().equals("SHA"))
+                                    {
                                         shaVal = value;
+                                    }
                                 }
                                 else
+                                {
                                     return;
+                                }
                                 objVars.add(value);
                             }//end for
 
                             if(canInsert(objVars, shaVal, dbItems))
+                            {
                                 batch.add(objVars);
+                            }
 
                             if(batch.size() == 500)
+                            {
                                 insertBatch(batch);
+                            }
                         }//end while
                     }//end if
             }//end switch
         }// end while
-        if (!batch.isEmpty())
+        if(!batch.isEmpty())
+        {
             insertBatch(batch);
+        }
         xmlDataAccess.close();
 	}
 
@@ -131,9 +143,13 @@ public class FMDumpHandler extends Thread
     {
         boolean canInsert = false;
         if(!dbItems.containsKey(objVars.get(0)))
+        {
             canInsert = true;
+        }
         else if(!dbItems.get(objVars.get(0)).equals(shaVal))
+        {
             canInsert = true;
+        }
 
         return canInsert;
     }

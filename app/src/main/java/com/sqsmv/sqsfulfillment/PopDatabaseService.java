@@ -7,7 +7,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Environment;
 import android.support.v4.app.NotificationCompat;
-import android.util.Log;
 
 import com.sqsmv.sqsfulfillment.database.ConfigDataAccess;
 import com.sqsmv.sqsfulfillment.database.DataAccess;
@@ -60,14 +59,15 @@ public class PopDatabaseService extends IntentService
             {
                 startUpdateThreads(xmlDataAccess, necessaryUpdateThreads);
             }
+            joinUpdateThreads(necessaryUpdateThreads);
+            appConfig.accessBoolean(DroidConfigManager.UPDATE_LOCK, false, true);
+
             XMLDataAccess[] otherDataAccesses = new XMLDataAccess[]{new ShipToDataAccess(this), new PackLineDataAccess(this), new PackagingDataAccess(this), new LensDataAccess(this)};
             ArrayList<Thread> otherUpdateThreads = new ArrayList<>();
             for(XMLDataAccess xmlDataAccess : otherDataAccesses)
             {
                 startUpdateThreads(xmlDataAccess, otherUpdateThreads);
             }
-            joinUpdateThreads(necessaryUpdateThreads);
-            appConfig.accessBoolean(DroidConfigManager.UPDATE_LOCK, false, true);
             joinUpdateThreads(otherUpdateThreads);
         }
         catch(IOException e)
@@ -80,8 +80,6 @@ public class PopDatabaseService extends IntentService
 
     private void downloadDBXZip()
     {
-        String message = String.format("in copyDBXFile");
-        Log.d(TAG, message);
         DropboxManager dbxMan = new DropboxManager(this);
 
         //Download update.txt to update DropBox to know about latest version of zip file
@@ -140,7 +138,9 @@ public class PopDatabaseService extends IntentService
 			mBuilder.setVibrate(pattern);
 		}
 		else
-			mBuilder.setSmallIcon(R.drawable.ic_launcher);
+        {
+            mBuilder.setSmallIcon(R.drawable.ic_launcher);
+        }
 		// Creates an explicit intent for an Activity in your app
 		Intent emptyIntent = new Intent();
 

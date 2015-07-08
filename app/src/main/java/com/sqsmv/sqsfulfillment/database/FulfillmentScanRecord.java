@@ -51,49 +51,63 @@ public class FulfillmentScanRecord implements DataRecord
     public String access_Id(String recId)
     {
         if(recId != null)
+        {
             _id = recId;
+        }
         return _id;
     }
 
     public String accessFkInvoiceId(String invoiceId)
     {
         if(invoiceId != null)
+        {
             fkInvoiceId = invoiceId;
+        }
         return fkInvoiceId;
     }
 
     public String accessScanDate(String date)
     {
         if(date != null)
+        {
             scanDate = date;
+        }
         return scanDate;
     }
 
     public String accessScannerName(String name)
     {
         if(name != null)
+        {
             scannerName = name;
+        }
         return scannerName;
     }
 
     public String accessFkConfigId(String configId)
     {
         if(configId != null)
+        {
             fkConfigId = configId;
+        }
         return fkConfigId;
     }
 
     public String accessFkORPackId(String orPackId)
     {
         if(orPackId != null)
+        {
             fkORPackId = orPackId;
+        }
         return fkORPackId;
     }
 
     public String accessScannedPackName(String packName)
     {
         if(packName != null)
+        {
             scannedPackName = packName;
+        }
         return scannedPackName;
     }
 
@@ -175,7 +189,9 @@ public class FulfillmentScanRecord implements DataRecord
             for(int count = 0; count < dbCursor.getColumnCount(); count++)
             {
                 if(columnList.contains(dbCursor.getColumnName(count)))
+                {
                     success = true;
+                }
                 setValueByKey(dbCursor.getColumnName(count), dbCursor.getString(count));
             }
         }

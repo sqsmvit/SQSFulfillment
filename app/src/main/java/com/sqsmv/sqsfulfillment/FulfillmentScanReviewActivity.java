@@ -17,9 +17,6 @@ import com.sqsmv.sqsfulfillment.database.FulfillmentScanDataAccess;
 
 import org.cory.libraries.QuickToast;
 
-import java.io.File;
-import java.io.IOException;
-
 
 public class FulfillmentScanReviewActivity extends Activity
 {
@@ -80,23 +77,17 @@ public class FulfillmentScanReviewActivity extends Activity
         Cursor fulfilledInvoicesCursor = fulfillmentScanDataAccess.selectAll();
         if(fulfilledInvoicesCursor.getCount() > 0)
         {
-            //ScanWriter scanWriter = new ScanWriter(this, fulfilledInvoicesCursor);
-            try
+            if(ScanWriter.exportFile(this, fulfilledInvoicesCursor))
             {
-                File exportFile = ScanWriter.writeExportFile(this, fulfilledInvoicesCursor);
                 fulfillmentScanDataAccess.deleteAll();
-                DropboxManager dropboxManager = new DropboxManager(this);
-                dropboxManager.writeToDropbox(exportFile, File.separator + "fulfillments" + File.separator + exportFile.getName(), true);
                 updateFulfilledInvoiceList();
                 appConfig.accessString(DroidConfigManager.CURRENT_SCANNER_NAME, "", "");
             }
-            catch(IOException e)
-            {
-                e.printStackTrace();
-            }
         }
         else
+        {
             QuickToast.makeToast(this, "No scans to commit");
+        }
     }
 
     private void updateFulfilledInvoiceList()

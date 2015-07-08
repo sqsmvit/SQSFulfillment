@@ -32,14 +32,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
-                android:text="@string/troubleShooting"
+                android:text="@string/header_troubleshooting"
                 android:textAppearance="?android:attr/textAppearanceLarge" />
 
             <TextView
                 android:id="@+id/ts1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/troubleShootingText"
+                android:text="@string/troubleshooting_instructions"
                 android:textAppearance="?android:attr/textAppearanceSmall" />
 
         </LinearLayout>
@@ -56,19 +56,19 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
-                android:text="@string/pairHeader"
+                android:text="@string/header_pair"
                 android:textAppearance="?android:attr/textAppearanceLarge"/>
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/pairInstruction1"
+                android:text="@string/pair_instructions1"
                 android:textAppearance="?android:attr/textAppearanceSmall"/>
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/pairInstruction2"
+                android:text="@string/pair_instructions2"
                 android:textAppearance="?android:attr/textAppearanceSmall"/>
 
             <LinearLayout
@@ -94,7 +94,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/pairInstruction3"
+                android:text="@string/pair_instructions3"
                 android:textAppearance="?android:attr/textAppearanceSmall"/>
 
             <com.sqsmv.sqsfulfillment.BarcodeView
@@ -105,7 +105,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/pairInstruction4"
+                android:text="@string/pair_instructions4"
                 android:textAppearance="?android:attr/textAppearanceSmall"/>
 
         </LinearLayout>

@@ -74,10 +74,8 @@ public class SocketMobilePairActivity extends Activity
 
     private void makeBarcode(Code128 barcode, String data, float width)
     {
-        /*
-           Code 128 Valid data char set:
-                all 128 ASCII characters (Char from 0 to 127)
-        */
+
+        //  Code 128 Valid data char set: all 128 ASCII characters (Char from 0 to 127)
         barcode.setData(data);
 
         //  Set the processTilde property to true, if you want use the tilde character "~"

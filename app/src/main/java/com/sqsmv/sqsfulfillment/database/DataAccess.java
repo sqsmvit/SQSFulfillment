@@ -71,9 +71,13 @@ public abstract class DataAccess
         {
             String insertValue = record.getValueByKey(getTableColumns()[count]);
             if(insertValue.equals("null"))
+            {
                 query.bindNull(count + 1);
+            }
             else
+            {
                 query.bindString(count + 1, insertValue);
+            }
         }
         query.executeInsert();
         query.close();

@@ -83,9 +83,12 @@
         </activity>
 
         <service
-            android:name="com.sqsmv.sqsfulfillment.PopDatabaseService"
-            android:enabled="true"
-            android:exported="true" >
+            android:name=".PopDatabaseService"
+            android:enabled="true" >
+        </service>
+        <service
+            android:name=".AppUpdateService"
+            android:enabled="true" >
         </service>
     </application>
 

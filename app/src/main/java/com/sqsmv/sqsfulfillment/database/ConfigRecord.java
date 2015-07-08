@@ -44,21 +44,27 @@ public class ConfigRecord implements DataRecord
     public String accessPkConfigId(String configId)
     {
         if(configId != null)
+        {
             pkConfigId = configId;
+        }
         return pkConfigId;
     }
 
     public String accessFkPackId(String packId)
     {
         if(packId != null)
+        {
             fkPackId = packId;
+        }
         return fkPackId;
     }
 
     public String accessConfigName(String name)
     {
         if(name != null)
+        {
             configName = name;
+        }
         return configName;
     }
 
@@ -75,14 +81,18 @@ public class ConfigRecord implements DataRecord
     public String accessIsValid(String isValidConfig)
     {
         if(isValidConfig != null)
+        {
             isValid = isValidConfig;
+        }
         return isValid;
     }
 
     public String accessSha(String shaVal)
     {
         if(shaVal != null)
+        {
             sha = shaVal;
+        }
         return sha;
     }
 
@@ -158,7 +168,9 @@ public class ConfigRecord implements DataRecord
             for(int count = 0; count < dbCursor.getColumnCount(); count++)
             {
                 if(columnList.contains(dbCursor.getColumnName(count)) && !dbCursor.getColumnName(count).equals(XMLFileContract.COLUMN_NAME_SHA))
+                {
                     success = true;
+                }
                 setValueByKey(dbCursor.getColumnName(count), dbCursor.getString(count));
             }
         }
@@ -205,11 +217,15 @@ public class ConfigRecord implements DataRecord
         boolean matches = true;
         int count = 0;
         if(getNumConfigIds() != packIdList.size())
+        {
             matches = false;
+        }
         while(matches && count < getNumConfigIds())
         {
             if(!subPackIdList.get(count).equals(packIdList.get(count)))
+            {
                 matches = false;
+            }
             count++;
         }
         return matches;
@@ -227,11 +243,15 @@ public class ConfigRecord implements DataRecord
             for(int count = 0; count < dbCursor.getColumnCount(); count++)
             {
                 if(columnList.contains(dbCursor.getColumnName(count)) && !dbCursor.getColumnName(count).equals(XMLFileContract.COLUMN_NAME_SHA))
+                {
                     success = true;
+                }
                 newConfigRecord.setValueByKey(dbCursor.getColumnName(count), dbCursor.getString(count));
             }
             if(success)
+            {
                 configRecords.add(newConfigRecord);
+            }
         }
         dbCursor.close();
         return configRecords;

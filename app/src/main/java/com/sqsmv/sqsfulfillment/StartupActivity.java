@@ -8,7 +8,9 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 
+import org.cory.libraries.AppInfo;
 import org.cory.libraries.DroidInfo;
 import org.cory.libraries.FileHandling;
 import org.cory.libraries.MoreDateFunctions;
@@ -21,6 +23,7 @@ public class StartupActivity extends Activity
     private static final String TAG = "StartupActivity";
 
     DropboxManager dropboxManager;
+    UpdateLauncher updateLauncher;
 
     //ToDo: Export tracking
 
@@ -31,10 +34,13 @@ public class StartupActivity extends Activity
         setContentView(R.layout.activity_startup);
 
         dropboxManager = new DropboxManager(this);
-
+        updateLauncher = new UpdateLauncher(this);
 
         Button launchScannerPairButton = (Button)findViewById(R.id.LaunchScannerPairButton);
         Button launchFulfillmentScanButton = (Button)findViewById(R.id.LaunchFulfillmentScanButton);
+
+        TextView versionTextView = (TextView)findViewById(R.id.VersionText);
+        versionTextView.setText("Version: " + AppInfo.getVersion(this));
 
         launchScannerPairButton.setOnClickListener(new View.OnClickListener()
         {
@@ -60,7 +66,9 @@ public class StartupActivity extends Activity
     {
         super.onResume();
         if(!dropboxManager.hasLinkedAccount())
+        {
             linkDropboxAccount();
+        }
     }
 
     @Override
@@ -69,7 +77,9 @@ public class StartupActivity extends Activity
         if(requestCode == 1)
         {
             if(resultCode == RESULT_OK)
+            {
                 dropboxManager.initDropboxFileSystem();
+            }
             else
             {
                 QuickToast.makeToast(this, "Error Connecting to Dropbox");
@@ -106,23 +116,33 @@ public class StartupActivity extends Activity
 
     private void checkDailyTasks()
     {
-        String today = MoreDateFunctions.getTodayYYMMDD();
         DroidConfigManager appConfig = new DroidConfigManager(this);
-        String lastUpdatedString = appConfig.accessString(appConfig.LAST_UPDATED, null, "");
+        String today = MoreDateFunctions.getTodayYYMMDD();
+        String lastUpdatedString = appConfig.accessString(DroidConfigManager.LAST_UPDATED, null, "");
 
         if(!today.equals(lastUpdatedString))
         {
-            appConfig.accessString(appConfig.LAST_UPDATED, today, "");
-            FileHandling.cleanFolder(new File(Environment.getExternalStorageDirectory().toString() + "/FulfillBackups"), 180);
-            launchUpdate();
+            if(updateLauncher.checkNeedAppUpdate())
+            {
+                updateLauncher.startAppUpdate();
+            }
+            else
+            {
+                appConfig.accessString(DroidConfigManager.PRIOR_VERSION, "", "");
+                appConfig.accessString(appConfig.LAST_UPDATED, today, "");
+                FileHandling.cleanFolder(new File(Environment.getExternalStorageDirectory().toString() + "/FulfillBackups"), 180);
+                launchDBUpdate();
+            }
         }
         else
+        {
             launchFulfillmentScanActivity();
+        }
     }
 
-    private void launchUpdate()
+    private void launchDBUpdate()
     {
-        final Thread blockingThread = DatabaseUpdateLauncher.startDBUpdate(this);
+        final Thread blockingThread = updateLauncher.startDBUpdate();
         new Thread()
         {
             @Override

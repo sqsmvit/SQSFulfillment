@@ -24,7 +24,9 @@ public final class FileHandling
                 if(currentFile.lastModified() < eligibleForDeletion)
                 {
                     if(!currentFile.delete())
+                    {
                         System.out.println("Unable to delete " + currentFile.getName());
+                    }
                 }
             }
         }
@@ -75,7 +77,8 @@ public final class FileHandling
         byte[] buf = new byte[1024];
         int len;
 
-        while ((len = in.read(buf)) > 0) {
+        while ((len = in.read(buf)) > 0)
+        {
             out.write(buf, 0, len);
         }
 

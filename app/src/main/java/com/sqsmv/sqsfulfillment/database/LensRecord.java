@@ -28,21 +28,27 @@ public class LensRecord implements DataRecord
     public String accessPkLensId(String lensId)
     {
         if(lensId != null)
+        {
             pkLensId = lensId;
+        }
         return pkLensId;
     }
 
     public String accessLensName(String name)
     {
         if(name != null)
+        {
             lensName = name;
+        }
         return lensName;
     }
 
     public String accessSha(String shaVal)
     {
         if(shaVal != null)
+        {
             sha = shaVal;
+        }
         return sha;
     }
 
@@ -100,7 +106,9 @@ public class LensRecord implements DataRecord
             for(int count = 0; count < dbCursor.getColumnCount(); count++)
             {
                 if(columnList.contains(dbCursor.getColumnName(count)) && !dbCursor.getColumnName(count).equals(XMLFileContract.COLUMN_NAME_SHA))
+                {
                     success = true;
+                }
                 setValueByKey(dbCursor.getColumnName(count), dbCursor.getString(count));
             }
         }

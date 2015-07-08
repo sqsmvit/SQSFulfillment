@@ -53,77 +53,99 @@ public class InvoiceRecord implements DataRecord
     public String accessPkInvoiceId(String invoiceId)
     {
         if(invoiceId != null)
+        {
             pkInvoiceId = invoiceId;
+        }
         return pkInvoiceId;
     }
 
     public String accessFkPackId(String packId)
     {
         if(packId != null)
+        {
             fkPackId = packId;
+        }
         return fkPackId;
     }
 
     public String accessFkShipToId(String shipToId)
     {
         if(shipToId != null)
+        {
             fkShipToId = shipToId;
+        }
         return fkShipToId;
     }
 
     public String accessFkLensIds(String lensIds)
     {
         if(lensIds != null)
+        {
             fkLensIds = lensIds;
+        }
         return fkLensIds;
     }
 
     public String accessFkShipRequestId(String shipRequestId)
     {
         if(shipRequestId != null)
+        {
             fkShipRequestId = shipRequestId;
+        }
         return fkShipRequestId;
     }
 
     public String accessFkBatchId(String batchId)
     {
         if(batchId != null)
+        {
             fkBatchId = batchId;
+        }
         return fkBatchId;
     }
 
     public String accessBatchName(String bName)
     {
         if(bName != null)
+        {
             batchName = bName;
+        }
         return batchName;
     }
 
     public String accessDocDate(String date)
     {
         if(date != null)
+        {
             docDate = date;
+        }
         return docDate;
     }
 
     public String accessBoxNum(String bxNum)
     {
         if(bxNum != null)
+        {
             boxNum = bxNum;
+        }
         return boxNum;
     }
 
     public String accessFkConfigId(String configId)
     {
         if(configId != null)
+        {
             fkConfigId = configId;
+        }
         return fkConfigId;
     }
 
     public String accessSha(String shaVal)
     {
         if(shaVal != null)
+        {
             sha = shaVal;
+        }
         return sha;
     }
 
@@ -230,7 +252,9 @@ public class InvoiceRecord implements DataRecord
             for(int count = 0; count < dbCursor.getColumnCount(); count++)
             {
                 if(columnList.contains(dbCursor.getColumnName(count)) && !dbCursor.getColumnName(count).equals(XMLFileContract.COLUMN_NAME_SHA))
+                {
                     success = true;
+                }
                 setValueByKey(dbCursor.getColumnName(count), dbCursor.getString(count));
             }
         }
@@ -258,10 +282,11 @@ public class InvoiceRecord implements DataRecord
     {
         String invoiceOutput = "";
         if(!accessPkInvoiceId(null).isEmpty())
+        {
             invoiceOutput = "Invoice#: " + accessPkInvoiceId(null) +
                     "\nDocDate: " + accessDocDate(null) +
                     "\nBox: " + boxNum;
-
+        }
         return invoiceOutput;
     }
 }
