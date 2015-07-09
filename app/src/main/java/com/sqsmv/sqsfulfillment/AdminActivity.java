@@ -14,6 +14,7 @@ import android.widget.SimpleAdapter;
 import com.sqsmv.sqsfulfillment.database.DBAdapter;
 
 import org.cory.libraries.MoreDateFunctions;
+import org.cory.libraries.QuickToast;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -123,6 +124,10 @@ public class AdminActivity extends Activity
         if(updateLauncher.checkNeedAppUpdate())
         {
             updateLauncher.startAppUpdate();
+        }
+        else
+        {
+            QuickToast.makeToast(this, "This app is already at the latest version.");
         }
     }
 

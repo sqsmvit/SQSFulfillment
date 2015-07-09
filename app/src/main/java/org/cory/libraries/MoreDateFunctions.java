@@ -130,7 +130,7 @@ public final class MoreDateFunctions
      */
     public static String formatDateAsFileTimestamp(Date formatDate)
     {
-        return FILE_TIMESTAMP_FORMAT.format(new Date());
+        return FILE_TIMESTAMP_FORMAT.format(formatDate);
     }
 
     /**
