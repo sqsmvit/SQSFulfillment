@@ -6,11 +6,15 @@
     <string name="title_activity_admin">Admin</string>
     <string name="title_activity_socket_mobile_pair">SocketMobilePairActivity</string>
     <string name="title_activity_fulfillment_scan_review">FulfillmentScanReviewActivity</string>
+    <string name="title_activity_pack_reset">PackResetActivity</string>
 
     <!-- Shared Strings -->
     <string name="apk_file_name">SQSFulfillment.apk</string>
+    <string name="back_button_text">Back</string>
+    <string name="commit_button_text">Commit</string>
+    <string name="pack_regex">^[kK](\\d{1,5})([mM](\\d{1,5}))?$</string>
 
-    <!-- Dropbox Info -->
+    <!-- Dropbox App Info -->
     <string name="DBX_APP_KEY">ze0ukc1ozh9w88y</string>
     <string name="DBX_SECRET_KEY">m5so9oi4qkxmcfv</string>
 

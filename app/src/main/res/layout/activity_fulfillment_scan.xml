@@ -1,4 +1,5 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.sqsmv.sqsfulfillment.FulfillmentScanActivity"
     android:id="@+id/MainScanActivity"
@@ -19,18 +20,10 @@
 
         <Button
             android:id="@+id/LaunchReviewButton"
-            android:layout_width="@dimen/weight_field_size"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight=".5"
             android:text="Review"/>
-
-        <Button
-            android:id="@+id/LaunchAdminButton"
-            android:layout_width="@dimen/weight_field_size"
-            android:layout_height="wrap_content"
-            android:layout_weight=".5"
-            android:text="Admin"/>
-
     </LinearLayout>
 
     <LinearLayout

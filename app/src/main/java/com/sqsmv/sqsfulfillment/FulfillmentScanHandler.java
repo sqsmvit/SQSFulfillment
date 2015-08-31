@@ -21,8 +21,8 @@ import java.util.regex.Pattern;
 
 public class FulfillmentScanHandler
 {
-    private static final Pattern invoicePattern = Pattern.compile("^[vV](\\d{7,8})$");
-    private static final Pattern packPattern = Pattern.compile("^[kK](\\d{1,5})$");
+    private static Pattern invoicePattern;
+    private static Pattern packPattern;
 
     private InvoiceDataAccess invoiceDataAccess;
     private ShipToDataAccess shipToDataAccess;
@@ -36,6 +36,9 @@ public class FulfillmentScanHandler
 
     public FulfillmentScanHandler(Context activityContext, InvoiceRecord invoiceRecord, ShipToRecord shipToRecord, PackRecord packRecord, FulfillmentScanRecord fulfillmentScanRecord)
     {
+        invoicePattern = Pattern.compile("^[vV](\\d{7,8})$");
+        packPattern = Pattern.compile(activityContext.getString(R.string.pack_regex));
+
         invoiceDataAccess = new InvoiceDataAccess(activityContext);
         shipToDataAccess = new ShipToDataAccess(activityContext);
         packDataAccess = new PackDataAccess(activityContext);
@@ -63,10 +66,9 @@ public class FulfillmentScanHandler
         fulfillmentScanDataAccess.close();
     }
 
-    public FulfillmentScanReturn handleRegularScan(String scanData)
+    public ScanReturn handleRegularScan(String scanData)
     {
-        FulfillmentScanReturn response = FulfillmentScanReturn.DISPLAY_SCAN;
-        //int response = 0;
+        ScanReturn response = ScanReturn.DISPLAY_SCAN;
 
         if(!currentFulfillmentScanRecord.accessScannerName(null).isEmpty())
         {
@@ -83,22 +85,22 @@ public class FulfillmentScanHandler
                         if(currentPackRecord.accessIsValid(null).isEmpty())
                         {
                             currentInvoiceRecord.accessFkPackId("");
-                            response = FulfillmentScanReturn.PACK_NEEDS_VALIDATION;
+                            response = ScanReturn.PACK_NEEDS_VALIDATION;
                         }
                         else if(currentPackRecord.accessIsDouble(null).equals("1"))
                         {
-                            response = FulfillmentScanReturn.DOUBLE_PACK_SCANNED;
+                            response = ScanReturn.DOUBLE_PACK_SCANNED;
                         }
                     }
                     else
                     {
-                        response = FulfillmentScanReturn.PACK_NOT_FOUND;
+                        response = ScanReturn.PACK_NOT_FOUND;
                     }
                 }
                 else
                 {
                     currentInvoiceRecord.clearRecord();
-                    response = FulfillmentScanReturn.BAD_INVOICE;
+                    response = ScanReturn.BAD_INVOICE;
                 }
             }
             else if(packMatcher.find())
@@ -109,8 +111,6 @@ public class FulfillmentScanHandler
                     //Invoice not scanned
                     if(!currentPackRecord.buildWithCursor(packDataAccess.selectByPk(packId)))
                     {
-                        currentInvoiceRecord.clearRecord();
-                        currentShipToRecord.clearRecord();
                         currentPackRecord.clearRecord();
                         currentPackRecord.accessPackName("Pack not found. ID: " + packId);
                     }
@@ -121,30 +121,30 @@ public class FulfillmentScanHandler
                     if(packId.equals(currentInvoiceRecord.accessFkPackId(null)))
                     {
                         insertRegularScan();
-                        response = FulfillmentScanReturn.SCAN_INSERTED;
+                        response = ScanReturn.SCAN_INSERTED;
                     }
                     else
                     {
-                        response = FulfillmentScanReturn.WRONG_PACK_SCANNED;
+                        response = ScanReturn.WRONG_PACK_SCANNED;
                     }
                 }
             }
             else
             {
-                response = FulfillmentScanReturn.BAD_BARCODE;
+                response = ScanReturn.BAD_BARCODE;
             }
         }
         else
         {
-            response = FulfillmentScanReturn.NO_ID;
+            response = ScanReturn.NO_ID;
         }
 
         return response;
     }
 
-    public FulfillmentScanReturn handleDoubleScan(String scanData, ArrayList<PackRecord> scannedPacks, ArrayList<ConfigRecord> possibleConfigs)
+    public ScanReturn handleDoubleScan(String scanData, ArrayList<PackRecord> scannedPacks, ArrayList<ConfigRecord> possibleConfigs)
     {
-        FulfillmentScanReturn response = FulfillmentScanReturn.DISPLAY_SCAN;
+        ScanReturn response = ScanReturn.DISPLAY_SCAN;
 
         if(!currentFulfillmentScanRecord.accessScannerName(null).isEmpty())
         {
@@ -182,11 +182,11 @@ public class FulfillmentScanHandler
                             {
                                 currentFulfillmentScanRecord.accessFkConfigId(fulfilledConfig.accessPkConfigId(null));
                                 insertRegularScan();
-                                response = FulfillmentScanReturn.SCAN_INSERTED;
+                                response = ScanReturn.SCAN_INSERTED;
                             }
                             else
                             {
-                                response = FulfillmentScanReturn.CONFIG_NEEDS_VALIDATION;
+                                response = ScanReturn.CONFIG_NEEDS_VALIDATION;
                                 scannedPacks.add(tempPackRecord);
                                 possibleConfigs.clear();
                                 possibleConfigs.add(fulfilledConfig);
@@ -201,27 +201,27 @@ public class FulfillmentScanHandler
                         }
                         else
                         {
-                            response = FulfillmentScanReturn.WRONG_PACK_SCANNED;
+                            response = ScanReturn.WRONG_PACK_SCANNED;
                         }
                     }
                     else
                     {
-                        response = FulfillmentScanReturn.PACK_NEEDS_VALIDATION;
+                        response = ScanReturn.PACK_NEEDS_VALIDATION;
                     }
                 }
                 else
                 {
-                    response = FulfillmentScanReturn.PACK_NOT_FOUND;
+                    response = ScanReturn.PACK_NOT_FOUND;
                 }
             }
             else
             {
-                response = FulfillmentScanReturn.BAD_BARCODE;
+                response = ScanReturn.BAD_BARCODE;
             }
         }
         else
         {
-            response = FulfillmentScanReturn.NO_ID;
+            response = ScanReturn.NO_ID;
         }
 
         return response;

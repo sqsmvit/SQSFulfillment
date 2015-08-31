@@ -14,15 +14,23 @@ import java.io.IOException;
 
 public class ScanWriter
 {
-    public static boolean exportFile(Context context, Cursor scanCursor)
+    public static boolean exportFile(Context context, Cursor scanCursor, ScanSource scanSource)
     {
         boolean success = false;
+        String directory = "";
+        switch(scanSource)
+        {
+            case FulfillmentScans:
+                directory = "fulfillments";
+            case ResetScans:
+                directory = "reset";
+        }
 
         try
         {
             File exportFile = ScanWriter.writeExportFile(context, scanCursor);
             DropboxManager dropboxManager = new DropboxManager(context);
-            dropboxManager.writeToDropbox(exportFile, File.separator + "fulfillments" + File.separator + exportFile.getName(), true);
+            dropboxManager.writeToDropbox(exportFile, File.separator + directory + File.separator + exportFile.getName(), true);
             success = true;
         }
         catch(IOException e)
@@ -33,7 +41,7 @@ public class ScanWriter
         return success;
     }
 
-    public static File writeExportFile(Context context, Cursor scanCursor) throws IOException
+    private static File writeExportFile(Context context, Cursor scanCursor) throws IOException
     {
         String fileName = DroidInfo.getDeviceName() + "_" + MoreDateFunctions.getNowFileTimestamp() + ".txt";
         File exportFile = new File(context.getFilesDir() + File.separator + fileName);
@@ -43,9 +51,6 @@ public class ScanWriter
         return exportFile;
     }
 
-    /**
-     * @throws java.io.IOException
-     */
     private static void writeToFile(File writeFile, Cursor scanCursor) throws IOException
     {
         String writeString;
@@ -61,20 +66,14 @@ public class ScanWriter
         scanCursor.close();
     }
 
-    /**
-     * @throws java.io.IOException
-     */
     private static void writeBackup(File copyFile) throws IOException
     {
-        File root = new File(Environment.getExternalStorageDirectory().toString() + File.separator + "FulfillBackups");
+        File root = new File(Environment.getExternalStorageDirectory().toString() + File.separator + "FulfillmentBackups");
         root.mkdirs();
         File backupFile = new File(root.getAbsolutePath(), "B_" + copyFile.getName());
         FileHandling.copyFile(copyFile, backupFile);
     }
 
-    /**
-     * @return
-     */
     private static String buildString(Cursor scanCursor)
     {
         String writeString = "";

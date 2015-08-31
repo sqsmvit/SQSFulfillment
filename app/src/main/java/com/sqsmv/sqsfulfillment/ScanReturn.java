@@ -1,6 +1,6 @@
 package com.sqsmv.sqsfulfillment;
 
-public enum FulfillmentScanReturn
+public enum ScanReturn
 {
     SCAN_INSERTED,
     DISPLAY_SCAN,
@@ -11,5 +11,7 @@ public enum FulfillmentScanReturn
     PACK_NEEDS_VALIDATION,
     DOUBLE_PACK_SCANNED,
     WRONG_PACK_SCANNED,
-    CONFIG_NEEDS_VALIDATION
+    CONFIG_NEEDS_VALIDATION,
+    NEEDS_QUANTITY,
+    NO_INITIALS
 }

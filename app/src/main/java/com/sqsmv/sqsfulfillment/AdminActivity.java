@@ -35,7 +35,7 @@ public class AdminActivity extends Activity
         setContentView(R.layout.activity_admin);
 
         updateLauncher = new UpdateLauncher(this);
-        backupDir = new File(Environment.getExternalStorageDirectory().toString() + "/FulfillBackups");
+        backupDir = new File(Environment.getExternalStorageDirectory().toString() + "/FulfillmentBackups");
 
         Button adminBackButton = (Button)findViewById(R.id.AdminBackButton);
 

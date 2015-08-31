@@ -85,6 +85,11 @@ public abstract class DataAccess
         db.endTransaction();
     }
 
+    public void deleteByPk(String pKey)
+    {
+        db.delete(contract.getTableName(), contract.getPrimaryKeyName() + " = ?", new String[]{pKey});
+    }
+
     public void deleteAll()
     {
         db.delete(contract.getTableName(), null, null);

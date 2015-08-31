@@ -11,6 +11,8 @@ public class DroidConfigManager
     public final static String UPDATE_LOCK = "updateLock";
     public final static String LAST_APP_UPDATE = "lastAppUpdate";
     public final static String PRIOR_VERSION = "priorVersion";
+    public final static String RESET_SCANNER_INITIALS = "resetScannerInitials";
+    public final static String RESET_SCAN_ID = "resetScanId";
 
     private SharedPreferences config;
     private final static String prefName = "fulfillmentConfig";

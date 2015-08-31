@@ -18,6 +18,8 @@ import android.os.Vibrator;
 import android.text.InputType;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -88,6 +90,7 @@ public class FulfillmentScanActivity extends Activity
 
     private boolean scannerLock;
     private boolean doubleMode;
+    private boolean tempKeepScanner;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -112,7 +115,6 @@ public class FulfillmentScanActivity extends Activity
         fulfillmentScanHandler = new FulfillmentScanHandler(this, currentInvoiceRecord, currentShipToRecord, currentPackRecord, currentFulfillmentScanRecord);
 
         Button launchReviewButton = (Button)findViewById(R.id.LaunchReviewButton);
-        Button launchAdminButton = (Button)findViewById(R.id.LaunchAdminButton);
         TextView scannedPackListHeader = (TextView)findViewById(R.id.ScannedPackListHeader);
 
         resetButton = (Button)findViewById(R.id.ResetButton);
@@ -136,14 +138,6 @@ public class FulfillmentScanActivity extends Activity
             public void onClick(View v)
             {
                 launchReviewActivity();
-            }
-        });
-        launchAdminButton.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View v)
-            {
-                launchAdminActivity();
             }
         });
         scannedPackListHeader.setOnClickListener(new View.OnClickListener()
@@ -198,13 +192,15 @@ public class FulfillmentScanActivity extends Activity
     {
         super.onResume();
 
+        tempKeepScanner = false;
+
         openDataAccesses();
         displayTotalFulfillments();
 
         scannerLock = appConfig.accessBoolean(DroidConfigManager.SCANNER_LOCK, null, false);
         String scannerName = appConfig.accessString(DroidConfigManager.CURRENT_SCANNER_NAME, null, "");
         currentFulfillmentScanRecord.accessScannerName(scannerName);
-        if(currentFulfillmentScanRecord.accessScannerName(null).length() < 2)
+        if(currentFulfillmentScanRecord.accessScannerName(null).isEmpty())
         {
             displayScannerNameWarning();
         }
@@ -234,7 +230,7 @@ public class FulfillmentScanActivity extends Activity
         // unregister the scanner
         unregisterReceiver(receiver);
 
-        if(!scannerLock)
+        if(!scannerLock && !tempKeepScanner)
         {
             ScanAPIApplication.getApplicationInstance().forceRelease();
         }
@@ -242,15 +238,36 @@ public class FulfillmentScanActivity extends Activity
         super.onStop();
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu)
+    {
+        getMenuInflater().inflate(R.menu.menu_fulfillment_scan, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item)
+    {
+        switch(item.getItemId())
+        {
+            case R.id.AdminOption:
+                Navigation.launchAdminActivity(this);
+                return true;
+            case R.id.PackResetOption:
+                tempKeepScanner = true;
+                Navigation.launchPackResetScanActivity(this);
+                return true;
+            case R.id.SMPairOption:
+                Navigation.launchSMPairActivity(this);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
     private void launchReviewActivity()
     {
         Intent intent = new Intent(this, FulfillmentScanReviewActivity.class);
-        startActivity(intent);
-    }
-
-    private void launchAdminActivity()
-    {
-        Intent intent = new Intent(this, AdminActivity.class);
         startActivity(intent);
     }
 
@@ -321,7 +338,7 @@ public class FulfillmentScanActivity extends Activity
         }
     }
 
-    private void handleRegularScanResponse(FulfillmentScanReturn scanResponse)
+    private void handleRegularScanResponse(ScanReturn scanResponse)
     {
         switch(scanResponse)
         {
@@ -366,7 +383,7 @@ public class FulfillmentScanActivity extends Activity
         }
     }
 
-    private void handleDoubleScanResponse(FulfillmentScanReturn scanResponse)
+    private void handleDoubleScanResponse(ScanReturn scanResponse)
     {
         switch(scanResponse)
         {
@@ -670,8 +687,6 @@ public class FulfillmentScanActivity extends Activity
 
     private final BroadcastReceiver receiver = new BroadcastReceiver()
     {
-        private static final String TAG = "BroadcastReceiver";
-
         @Override
         public void onReceive(Context c, Intent intent)
         {
@@ -679,7 +694,6 @@ public class FulfillmentScanActivity extends Activity
             {
                 String scanData = new String(intent.getCharArrayExtra(ScanAPIApplication.EXTRA_DECODEDDATA));
 
-                //Scanned stuff
                 if(!doubleMode)
                 {
                     handleRegularScanResponse(fulfillmentScanHandler.handleRegularScan(scanData));
@@ -697,35 +711,20 @@ public class FulfillmentScanActivity extends Activity
             {
                 QuickToast.makeLongToast(c, intent.getStringExtra(ScanAPIApplication.EXTRA_ERROR_MESSAGE));
             }
-        }// end on Recieve
+        }
     };
 
     private void regBroadCastReceivers()
     {
         IntentFilter filter;
-        filter = new IntentFilter(ScanAPIApplication.NOTIFY_SCANPI_INITIALIZED);
-        registerReceiver(this.receiver, filter);
-
         filter = new IntentFilter(ScanAPIApplication.NOTIFY_SCANNER_ARRIVAL);
-        registerReceiver(this.receiver, filter);
-
-        filter = new IntentFilter(ScanAPIApplication.NOTIFY_SCANNER_REMOVAL);
-        registerReceiver(this.receiver, filter);
+        registerReceiver(receiver, filter);
 
         filter = new IntentFilter(ScanAPIApplication.NOTIFY_DECODED_DATA);
-        registerReceiver(this.receiver, filter);
+        registerReceiver(receiver, filter);
 
         filter = new IntentFilter(ScanAPIApplication.NOTIFY_ERROR_MESSAGE);
-        registerReceiver(this.receiver, filter);
-
-        filter = new IntentFilter(ScanAPIApplication.NOTIFY_CLOSE_ACTIVITY);
-        registerReceiver(this.receiver, filter);
-
-        filter = new IntentFilter(ScanAPIApplication.SET_SOUND_CONFIG_COMPLETE);
-        registerReceiver(this.receiver, filter);
-
-        filter = new IntentFilter(ScanAPIApplication.GET_SOUND_CONFIG_COMPLETE);
-        registerReceiver(this.receiver, filter);
+        registerReceiver(receiver, filter);
 
         // increasing the Application View count from 0 to 1 will
         // cause the application to open and initialize ScanAPI

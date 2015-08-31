@@ -25,8 +25,6 @@ public class StartupActivity extends Activity
     DropboxManager dropboxManager;
     UpdateLauncher updateLauncher;
 
-    //ToDo: Export tracking
-
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -36,20 +34,10 @@ public class StartupActivity extends Activity
         dropboxManager = new DropboxManager(this);
         updateLauncher = new UpdateLauncher(this);
 
-        Button launchScannerPairButton = (Button)findViewById(R.id.LaunchScannerPairButton);
         Button launchFulfillmentScanButton = (Button)findViewById(R.id.LaunchFulfillmentScanButton);
 
         TextView versionTextView = (TextView)findViewById(R.id.VersionText);
         versionTextView.setText("Version: " + AppInfo.getVersion(this));
-
-        launchScannerPairButton.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View v)
-            {
-                launchSMPairActivity();
-            }
-        });
 
         launchFulfillmentScanButton.setOnClickListener(new View.OnClickListener()
         {
@@ -88,19 +76,12 @@ public class StartupActivity extends Activity
         }
     }
 
-    private void launchSMPairActivity()
-    {
-        Intent intent = new Intent(this, SocketMobilePairActivity.class);
-        startActivity(intent);
-    }
-
     private void launchFulfillmentScanActivity()
     {
         Intent intent = new Intent(this, FulfillmentScanActivity.class);
         startActivity(intent);
     }
 
-    //Checks WiFi and checks/links an account
     private void linkDropboxAccount()
     {
         if(DroidInfo.isWiFiConnected(this))

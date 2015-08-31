@@ -50,36 +50,27 @@
         <activity
             android:name=".FulfillmentScanActivity"
             android:label="@string/app_name"
-            android:parentActivityName=".StartupActivity"
             android:screenOrientation="portrait" >
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.sqsmv.sqsfulfillment.StartupActivity" />
         </activity>
         <activity
             android:name=".AdminActivity"
             android:label="@string/title_activity_admin"
-            android:parentActivityName=".FulfillmentScanActivity"
             android:screenOrientation="portrait" >
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".FulfillmentScanActivity" />
         </activity>
         <activity
             android:name=".SocketMobilePairActivity"
             android:label="@string/title_activity_socket_mobile_pair"
-            android:parentActivityName=".StartupActivity" >
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.sqsmv.sqsfulfillment.StartupActivity" />
+            android:screenOrientation="portrait" >
         </activity>
         <activity
             android:name=".FulfillmentScanReviewActivity"
             android:label="@string/title_activity_fulfillment_scan_review"
-            android:parentActivityName=".FulfillmentScanActivity" >
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.sqsmv.sqsfulfillment.FulfillmentScanActivity" />
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name=".PackResetScanActivity"
+            android:label="@string/title_activity_pack_reset"
+            android:screenOrientation="portrait" >
         </activity>
 
         <service
@@ -90,6 +81,7 @@
             android:name=".AppUpdateService"
             android:enabled="true" >
         </service>
+
     </application>
 
 </manifest>

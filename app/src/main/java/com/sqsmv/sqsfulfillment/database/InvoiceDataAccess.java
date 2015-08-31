@@ -22,9 +22,4 @@ public class InvoiceDataAccess extends XMLDataAccess
     {
         return new InvoiceRecord();
     }
-
-    public void deleteByPk(String pKey)
-    {
-        db.delete(contract.getTableName(), contract.getPrimaryKeyName() + " = ?", new String[]{pKey});
-    }
 }

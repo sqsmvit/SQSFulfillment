@@ -77,7 +77,7 @@ public class FulfillmentScanReviewActivity extends Activity
         Cursor fulfilledInvoicesCursor = fulfillmentScanDataAccess.selectAll();
         if(fulfilledInvoicesCursor.getCount() > 0)
         {
-            if(ScanWriter.exportFile(this, fulfilledInvoicesCursor))
+            if(ScanWriter.exportFile(this, fulfilledInvoicesCursor, ScanSource.FulfillmentScans))
             {
                 fulfillmentScanDataAccess.deleteAll();
                 updateFulfilledInvoiceList();

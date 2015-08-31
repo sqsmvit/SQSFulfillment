@@ -38,7 +38,7 @@ public class AppUpdateService extends IntentService
         Cursor fulfilledInvoicesCursor = fulfillmentScanDataAccess.selectAll();
         if(fulfilledInvoicesCursor.getCount() > 0)
         {
-            while(!ScanWriter.exportFile(this, fulfilledInvoicesCursor));
+            while(!ScanWriter.exportFile(this, fulfilledInvoicesCursor, ScanSource.FulfillmentScans));
             fulfillmentScanDataAccess.deleteAll();
         }
         fulfillmentScanDataAccess.close();
