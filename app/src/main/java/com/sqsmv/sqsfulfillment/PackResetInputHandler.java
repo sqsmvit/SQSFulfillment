@@ -92,7 +92,15 @@ public class PackResetInputHandler
         if(packMatcher.find())
         {
             String packId = packMatcher.group(1);
-            String pullMasterId = packMatcher.group(3);
+            String pullMasterId;
+            if(packMatcher.group(3) == null)
+            {
+                pullMasterId = "";
+            }
+            else
+            {
+                pullMasterId = packMatcher.group(3);
+            }
             if(currentPackRecord.buildWithCursor(packDataAccess.selectByPk(packId)))
             {
                 if(scannerInitials.length() > 1)
