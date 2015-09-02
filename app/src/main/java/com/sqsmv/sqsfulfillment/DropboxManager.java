@@ -1,31 +1,25 @@
 package com.sqsmv.sqsfulfillment;
 
-import android.app.Activity;
 import android.content.Context;
-import android.util.Log;
 
-import com.dropbox.sync.android.DbxAccountManager;
-import com.dropbox.sync.android.DbxException;
-import com.dropbox.sync.android.DbxFile;
-import com.dropbox.sync.android.DbxFileInfo;
-import com.dropbox.sync.android.DbxFileSystem;
-import com.dropbox.sync.android.DbxPath;
-
-import org.cory.libraries.QuickToast;
+import com.dropbox.client2.DropboxAPI;
+import com.dropbox.client2.android.AndroidAuthSession;
+import com.dropbox.client2.exception.DropboxException;
+import com.dropbox.client2.session.AppKeyPair;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.IOException;
 
 public class DropboxManager
 {
     private static final String TAG = "CheckDropboxActivity";
 
     private Context context;
-    private DbxAccountManager dbxAccountManager;
-    private DbxFileSystem dbxFileSystem;
+    private DropboxAPI<AndroidAuthSession> dropboxAPI;
+
+    private static String oAuth2AccessToken;
 
     public DropboxManager(Context activityContext)
     {
@@ -33,140 +27,168 @@ public class DropboxManager
 
         String dropboxAppKey = context.getString(R.string.DBX_APP_KEY);
         String dropboxAppSecret = context.getString(R.string.DBX_SECRET_KEY);
-        dbxAccountManager = DbxAccountManager.getInstance(activityContext.getApplicationContext(), dropboxAppKey, dropboxAppSecret);
 
-        if(hasLinkedAccount())
+        AppKeyPair appKeys = new AppKeyPair(dropboxAppKey, dropboxAppSecret);
+        AndroidAuthSession session = new AndroidAuthSession(appKeys);
+        dropboxAPI = new DropboxAPI<>(session);
+
+        if(oAuth2AccessToken != null)
         {
-            initDropboxFileSystem();
-            clearCache();
+            setOAuth2AccessToken(oAuth2AccessToken);
         }
     }
 
-    public boolean linkDropboxAccount()
+    public void linkDropboxAccount()
     {
-        boolean accountLinked = false;
-        if(!hasLinkedAccount())
-        {
-            dbxAccountManager.startLink((Activity) context, 1);
-            accountLinked = true;
-        }
-        return accountLinked;
+        dropboxAPI.getSession().startOAuth2Authentication(context);
     }
 
-    public boolean hasLinkedAccount()
+    public String getOAuth2AccessToken()
     {
-        return dbxAccountManager.hasLinkedAccount();
+        return dropboxAPI.getSession().getOAuth2AccessToken();
     }
 
-    public void initDropboxFileSystem()
+    public void setStaticOAuth2AccessToken(String accessToken)
     {
-        try
-        {
-            dbxFileSystem = DbxFileSystem.forAccount(dbxAccountManager.getLinkedAccount());
-        }
-        catch (DbxException.Unauthorized e)
-        {
-            e.printStackTrace();
-        }
+        oAuth2AccessToken = accessToken;
+        setOAuth2AccessToken(oAuth2AccessToken);
     }
 
-    public void writeToStorage(String dbxFilePath, String downloadPath)
+    public boolean finishAuthentication()
     {
-        Log.d(TAG, "writeToStorage begin");
-        clearCache();
-        DbxPath dropboxPath = new DbxPath(dbxFilePath);
-        try
+        boolean success = true;
+        if(dropboxAPI.getSession().authenticationSuccessful())
         {
-            DbxFile inFile = dbxFileSystem.open(dropboxPath);
-            inFile.getNewerStatus();
             try
             {
-                FileOutputStream outStream = new FileOutputStream(downloadPath);
+                dropboxAPI.getSession().finishAuthentication();
+            }
+            catch(IllegalStateException e)
+            {
+                e.printStackTrace();
+                success = false;
+            }
+        }
+        else
+        {
+            success = false;
+        }
+        return success;
+    }
 
-                byte[] buff = new byte[1024];
-                FileInputStream inStream = inFile.getReadStream();
-                int len;
-
-                while((len = inStream.read(buff)) > 0)
+    public Thread writeToStorage(final String dbxFilePath, String downloadPath, boolean fromMainThread)
+    {
+        final File downloadFile = new File(downloadPath);
+        Thread downloadThread = new Thread()
+        {
+            @Override
+            public void run()
+            {
+                try
                 {
-                    outStream.write(buff, 0, len);
+                    FileOutputStream outputStream = new FileOutputStream(downloadFile);
+                    dropboxAPI.getFile(dbxFilePath, null, outputStream, null);
                 }
-                outStream.close();
-            }
-            catch(FileNotFoundException e)
-            {
-                e.printStackTrace();
-                Log.e(TAG, "writeToStorage: FileNotFoundException");
-            }
-            catch(IOException e)
-            {
-                e.printStackTrace();
-                Log.e(TAG, "writeToStorage: IOException");
-            }
-            inFile.close();
-            clearCache();
-            Log.d(TAG, "writeToStorage end");
-        }
-        catch(DbxException e)
+                catch(FileNotFoundException | DropboxException e)
+                {
+                    e.printStackTrace();
+                }
+            };
+        };
+        if(fromMainThread)
         {
-            e.printStackTrace();
+            downloadThread.start();
         }
+        else
+        {
+            downloadThread.run();
+        }
+        return downloadThread;
     }
 
-    public void writeToDropbox(File fileToWrite, String dbxFilePath, boolean shouldSteal)
+    public Thread writeToDropbox(final File fileToWrite, final String dbxFilePath, final boolean shouldSteal, boolean fromMainThread)
     {
-        DbxPath outPath = new DbxPath(dbxFilePath);
-        try
+        Thread uploadThread = new Thread()
         {
-            DbxFile outFile = dbxFileSystem.create(outPath);
-            outFile.getNewerStatus();
+            @Override
+            public void run()
+            {
+                try
+                {
+                    FileInputStream inputStream = new FileInputStream(fileToWrite);
+                    dropboxAPI.putFile(dbxFilePath, inputStream, fileToWrite.length(), null, null);
+                    if(shouldSteal)
+                    {
+                        fileToWrite.delete();
+                    }
+                }
+                catch(FileNotFoundException | DropboxException e)
+                {
+                    e.printStackTrace();
+                }
+            };
+        };
+        if(fromMainThread)
+        {
+            uploadThread.start();
+        }
+        else
+        {
+            uploadThread.run();
+        }
 
-            try
-            {
-                outFile.writeFromExistingFile(fileToWrite, shouldSteal);
-            }
-            catch(IOException e)
-            {
-                e.printStackTrace();
-                Log.e(TAG, "writeToDropbox: IOException");
-            }
-            QuickToast.makeToast(context, "File exported to DropBox");
-            outFile.close();
-        }
-        catch(DbxException e)
-        {
-            e.printStackTrace();
-        }
+        return uploadThread;
     }
 
-    public DbxFileInfo getDbxFileInfo(String dbxFilePath)
+    public String getDbxFileRev(final String dbxFilePath)
     {
-        DbxFileInfo dbxFileInfo = null;
-        clearCache();
-        DbxPath dropboxPath = new DbxPath(dbxFilePath);
+        final dbxFileMetadata metadata = new dbxFileMetadata();
+        Thread metadataThread = new Thread()
+        {
+            @Override
+            public void run()
+            {
+                try
+                {
+                    metadata.setDropboxEntry(dropboxAPI.metadata(dbxFilePath, 1, null, false, null));
+                }
+                catch(DropboxException e)
+                {
+                    e.printStackTrace();
+                }
+            }
+        };
+;
+        metadataThread.start();
         try
         {
-            DbxFile dbxFile = dbxFileSystem.open(dropboxPath);
-            dbxFile.getNewerStatus();
-            dbxFileInfo = dbxFile.getInfo();
-            dbxFile.close();
+            metadataThread.join();
         }
-        catch(DbxException e)
+        catch(InterruptedException e)
         {
             e.printStackTrace();
         }
-        return dbxFileInfo;
+
+        return metadata.getDropboxEntry().rev;
     }
 
-    private void clearCache()
+    private void setOAuth2AccessToken(String accessToken)
     {
-        try
+        dropboxAPI.getSession().setOAuth2AccessToken(accessToken);
+    }
+
+    private class dbxFileMetadata
+    {
+        DropboxAPI.Entry dropboxEntry;
+
+        public DropboxAPI.Entry getDropboxEntry()
         {
-            dbxFileSystem.setMaxFileCacheSize(0);
+            return dropboxEntry;
         }
-        catch(DbxException e)
+
+        public void setDropboxEntry(DropboxAPI.Entry dbxEntry)
         {
-            e.printStackTrace();
+            dropboxEntry = dbxEntry;
         }
     }
 }

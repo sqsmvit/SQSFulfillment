@@ -152,7 +152,7 @@ public class AdminActivity extends Activity
 
         // set dialog message
         alertDialogBuilder
-                .setMessage("Send Backup to DropBox?")
+                .setMessage("Send Backup to Dropbox?")
                 .setCancelable(false)
                 .setPositiveButton("Yes", new DialogInterface.OnClickListener()
                 {
@@ -160,17 +160,17 @@ public class AdminActivity extends Activity
                     public void onClick(DialogInterface dialog, int id)
                     {
                         DropboxManager dropboxManager = new DropboxManager(getApplicationContext());
-                        dropboxManager.writeToDropbox(exportFile, File.separator + "default" + File.separator + exportFile.getName(), false);
+                        try
+                        {
+                            dropboxManager.writeToDropbox(exportFile, File.separator + "default" + File.separator + exportFile.getName(), false, true).join();
+                        }
+                        catch(InterruptedException e)
+                        {
+                            e.printStackTrace();
+                        }
                     }
                 })
-                .setNegativeButton("No", new DialogInterface.OnClickListener()
-                {
-                    @Override
-                    public void onClick(DialogInterface dialog, int id)
-                    {
-                        dialog.cancel();
-                    }
-                });
+                .setNegativeButton("No", null);
         // create alert dialog
         AlertDialog exportBackupDialog = alertDialogBuilder.create();
         exportBackupDialog.show();

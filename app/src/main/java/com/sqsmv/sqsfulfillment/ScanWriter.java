@@ -22,15 +22,24 @@ public class ScanWriter
         {
             case FulfillmentScans:
                 directory = "fulfillments";
+                break;
             case ResetScans:
                 directory = "reset";
+                break;
         }
 
         try
         {
             File exportFile = ScanWriter.writeExportFile(context, scanCursor);
             DropboxManager dropboxManager = new DropboxManager(context);
-            dropboxManager.writeToDropbox(exportFile, File.separator + directory + File.separator + exportFile.getName(), true);
+            try
+            {
+                dropboxManager.writeToDropbox(exportFile, File.separator + directory + File.separator + exportFile.getName(), true, true).join();
+            }
+            catch(InterruptedException e)
+            {
+                e.printStackTrace();
+            }
             success = true;
         }
         catch(IOException e)

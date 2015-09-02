@@ -22,6 +22,7 @@ public class StartupActivity extends Activity
 {
     private static final String TAG = "StartupActivity";
 
+    DroidConfigManager appConfig;
     DropboxManager dropboxManager;
     UpdateLauncher updateLauncher;
 
@@ -31,7 +32,9 @@ public class StartupActivity extends Activity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_startup);
 
+        appConfig = new DroidConfigManager(this);
         dropboxManager = new DropboxManager(this);
+        linkDropboxAccount();
         updateLauncher = new UpdateLauncher(this);
 
         Button launchFulfillmentScanButton = (Button)findViewById(R.id.LaunchFulfillmentScanButton);
@@ -53,26 +56,13 @@ public class StartupActivity extends Activity
     protected void onResume()
     {
         super.onResume();
-        if(!dropboxManager.hasLinkedAccount())
-        {
-            linkDropboxAccount();
-        }
-    }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data)
-    {
-        if(requestCode == 1)
+        if(dropboxManager.finishAuthentication())
         {
-            if(resultCode == RESULT_OK)
-            {
-                dropboxManager.initDropboxFileSystem();
-            }
-            else
-            {
-                QuickToast.makeToast(this, "Error Connecting to Dropbox");
-                finish();
-            }
+            String accessToken = dropboxManager.getOAuth2AccessToken();
+            appConfig.accessString(DroidConfigManager.DROPBOX_ACCESS_TOKEN, accessToken, "");
+            dropboxManager.setStaticOAuth2AccessToken(accessToken);
+            updateLauncher = new UpdateLauncher(this);
         }
     }
 
@@ -86,7 +76,15 @@ public class StartupActivity extends Activity
     {
         if(DroidInfo.isWiFiConnected(this))
         {
-            dropboxManager.linkDropboxAccount();
+            String accessToken = appConfig.accessString(DroidConfigManager.DROPBOX_ACCESS_TOKEN, null, "");
+            if(!accessToken.isEmpty())
+            {
+                dropboxManager.setStaticOAuth2AccessToken(accessToken);
+            }
+            else
+            {
+                dropboxManager.linkDropboxAccount();
+            }
         }
         else
         {
@@ -97,7 +95,6 @@ public class StartupActivity extends Activity
 
     private void checkDailyTasks()
     {
-        DroidConfigManager appConfig = new DroidConfigManager(this);
         String today = MoreDateFunctions.getTodayYYMMDD();
         String lastUpdatedString = appConfig.accessString(DroidConfigManager.LAST_UPDATED, null, "");
 

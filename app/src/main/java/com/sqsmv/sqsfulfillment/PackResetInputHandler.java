@@ -78,6 +78,7 @@ public class PackResetInputHandler
         }
         else
         {
+            currentPackRecord.accessPackName("Error: Not a pack");
             response = ScanReturn.BAD_BARCODE;
         }
 

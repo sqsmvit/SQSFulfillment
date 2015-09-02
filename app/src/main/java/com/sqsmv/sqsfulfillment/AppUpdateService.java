@@ -6,13 +6,9 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Environment;
 
-import com.dropbox.sync.android.DbxFileInfo;
 import com.sqsmv.sqsfulfillment.database.FulfillmentScanDataAccess;
 
-import org.cory.libraries.MoreDateFunctions;
-
 import java.io.File;
-import java.util.Date;
 
 public class AppUpdateService extends IntentService
 {
@@ -30,7 +26,6 @@ public class AppUpdateService extends IntentService
     {
         apkFileName = getString(R.string.apk_file_name);
         dropboxManager = new DropboxManager(this);
-
         DroidConfigManager appConfig = new DroidConfigManager(this);
 
         FulfillmentScanDataAccess fulfillmentScanDataAccess = new FulfillmentScanDataAccess(this);
@@ -44,19 +39,14 @@ public class AppUpdateService extends IntentService
         fulfillmentScanDataAccess.close();
 
         downloadAPK();
-        DbxFileInfo dbxFileInfo = dropboxManager.getDbxFileInfo("/out/" + apkFileName);
-        Date fileModifiedDate = dbxFileInfo.modifiedTime;
-        appConfig.accessString(DroidConfigManager.LAST_APP_UPDATE, MoreDateFunctions.formatDateAsFileTimestamp(fileModifiedDate), "");
+        String dbxFileRev = dropboxManager.getDbxFileRev("/out/" + apkFileName);
+        appConfig.accessString(DroidConfigManager.CURRENT_APK_REV, dbxFileRev, "");
         updateApp();
     }
 
     private void downloadAPK()
     {
-        //Download update.txt to update DropBox to know about latest version of zip file
-        dropboxManager.writeToStorage("/out/update.txt", Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).toString() + File.separator + "update.txt");
-        File updateFile = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).toString() + File.separator + "update.txt");
-        updateFile.delete();
-        dropboxManager.writeToStorage("/out/" + apkFileName, Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).toString() + File.separator + apkFileName);
+        dropboxManager.writeToStorage("/out/" + apkFileName, Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).toString() + File.separator + apkFileName, false);
     }
 
     private void updateApp()

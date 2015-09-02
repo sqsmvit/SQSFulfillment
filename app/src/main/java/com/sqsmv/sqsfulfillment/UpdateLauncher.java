@@ -4,12 +4,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 
-import com.dropbox.sync.android.DbxFileInfo;
-
 import org.cory.libraries.AppInfo;
-import org.cory.libraries.MoreDateFunctions;
-
-import java.util.Date;
 
 public class UpdateLauncher
 {
@@ -49,17 +44,14 @@ public class UpdateLauncher
         boolean needUpdate = false;
 
         String apkFileName = context.getString(R.string.apk_file_name);
-        String lastUpdated = appConfig.accessString(DroidConfigManager.LAST_APP_UPDATE, null, "");
-        dropboxManager.getDbxFileInfo("/out/" + apkFileName); //Accounting for outdated dropbox file info
-        DbxFileInfo dbxFileInfo = dropboxManager.getDbxFileInfo("/out/" + apkFileName);
-        Date fileModifiedDate = dbxFileInfo.modifiedTime;
-        String fileModifiedDateString = MoreDateFunctions.formatDateAsFileTimestamp(fileModifiedDate);
+        String currentRev = appConfig.accessString(DroidConfigManager.CURRENT_APK_REV, null, "");
+        String dbxFileRev = dropboxManager.getDbxFileRev("/out/" + apkFileName);
 
-        if(lastUpdated.isEmpty())
+        if(currentRev.isEmpty())
         {
-            appConfig.accessString(DroidConfigManager.LAST_APP_UPDATE, fileModifiedDateString, "");
+            appConfig.accessString(DroidConfigManager.CURRENT_APK_REV, dbxFileRev, "");
         }
-        else if(!lastUpdated.equals(fileModifiedDateString) || appConfig.accessString(DroidConfigManager.PRIOR_VERSION, null, "").equals(AppInfo.getVersion(context)))
+        else if(!currentRev.equals(dbxFileRev) || appConfig.accessString(DroidConfigManager.PRIOR_VERSION, null, "").equals(AppInfo.getVersion(context)))
         {
             needUpdate = true;
         }

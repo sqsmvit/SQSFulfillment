@@ -29,7 +29,7 @@ public class PopDatabaseService extends IntentService
 {
 	private static final String TAG = "PopDatabaseService";
     private final String zipFileName = "ffiles.zip";
-	
+
 	public PopDatabaseService()
     {
 		super(TAG);
@@ -82,11 +82,7 @@ public class PopDatabaseService extends IntentService
     {
         DropboxManager dbxMan = new DropboxManager(this);
 
-        //Download update.txt to update DropBox to know about latest version of zip file
-        dbxMan.writeToStorage("/out/update.txt", Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).toString() + File.separator + "update.txt");
-        File updateFile = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).toString() + File.separator + "update.txt");
-        updateFile.delete();
-        dbxMan.writeToStorage("/out/" + zipFileName, Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).toString() + File.separator + zipFileName);
+        dbxMan.writeToStorage("/out/" + zipFileName, Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).toString() + File.separator + zipFileName, false);
     }
 
     //Resets the tables that need to drop old information

@@ -5,11 +5,12 @@ import android.content.SharedPreferences;
 
 public class DroidConfigManager
 {
+    public final static String DROPBOX_ACCESS_TOKEN = "dropboxAccessToken";
     public final static String LAST_UPDATED = "lastUpdated";
     public final static String CURRENT_SCANNER_NAME = "currentScannerName";
     public final static String SCANNER_LOCK = "scannerLock";
     public final static String UPDATE_LOCK = "updateLock";
-    public final static String LAST_APP_UPDATE = "lastAppUpdate";
+    public final static String CURRENT_APK_REV = "currentAPKRev";
     public final static String PRIOR_VERSION = "priorVersion";
     public final static String RESET_SCANNER_INITIALS = "resetScannerInitials";
     public final static String RESET_SCAN_ID = "resetScanId";
