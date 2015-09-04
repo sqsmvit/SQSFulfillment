@@ -22,9 +22,9 @@ public class StartupActivity extends Activity
 {
     private static final String TAG = "StartupActivity";
 
-    DroidConfigManager appConfig;
-    DropboxManager dropboxManager;
-    UpdateLauncher updateLauncher;
+    private DroidConfigManager appConfig;
+    private DropboxManager dropboxManager;
+    private UpdateLauncher updateLauncher;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -34,8 +34,6 @@ public class StartupActivity extends Activity
 
         appConfig = new DroidConfigManager(this);
         dropboxManager = new DropboxManager(this);
-        linkDropboxAccount();
-        updateLauncher = new UpdateLauncher(this);
 
         Button launchFulfillmentScanButton = (Button)findViewById(R.id.LaunchFulfillmentScanButton);
 
@@ -57,12 +55,14 @@ public class StartupActivity extends Activity
     {
         super.onResume();
 
+        linkDropboxAccount();
+        updateLauncher = new UpdateLauncher(this);
+
         if(dropboxManager.finishAuthentication())
         {
             String accessToken = dropboxManager.getOAuth2AccessToken();
             appConfig.accessString(DroidConfigManager.DROPBOX_ACCESS_TOKEN, accessToken, "");
             dropboxManager.setStaticOAuth2AccessToken(accessToken);
-            updateLauncher = new UpdateLauncher(this);
         }
     }
 
