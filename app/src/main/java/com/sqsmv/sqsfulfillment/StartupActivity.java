@@ -55,15 +55,14 @@ public class StartupActivity extends Activity
     {
         super.onResume();
 
-        linkDropboxAccount();
-        updateLauncher = new UpdateLauncher(this);
-
         if(dropboxManager.finishAuthentication())
         {
             String accessToken = dropboxManager.getOAuth2AccessToken();
             appConfig.accessString(DroidConfigManager.DROPBOX_ACCESS_TOKEN, accessToken, "");
-            dropboxManager.setStaticOAuth2AccessToken(accessToken);
         }
+        linkDropboxAccount();
+        updateLauncher = new UpdateLauncher(this);
+
     }
 
     private void launchFulfillmentScanActivity()

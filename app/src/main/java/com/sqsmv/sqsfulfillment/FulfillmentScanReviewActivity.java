@@ -12,8 +12,8 @@ import android.widget.CursorAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.sqsmv.sqsfulfillment.database.FulfillmentScanContract;
-import com.sqsmv.sqsfulfillment.database.FulfillmentScanDataAccess;
+import com.sqsmv.sqsfulfillment.database.fulfillmentscan.FulfillmentScanContract;
+import com.sqsmv.sqsfulfillment.database.fulfillmentscan.FulfillmentScanDataAccess;
 
 import org.cory.libraries.QuickToast;
 

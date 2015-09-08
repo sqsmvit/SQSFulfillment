@@ -4,11 +4,25 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import com.sqsmv.sqsfulfillment.database.pack.PackContract;
+import com.sqsmv.sqsfulfillment.database.packaging.PackagingContract;
+import com.sqsmv.sqsfulfillment.database.config.ConfigContract;
+import com.sqsmv.sqsfulfillment.database.fulfillmentscan.FulfillmentScanContract;
+import com.sqsmv.sqsfulfillment.database.invoice.InvoiceContract;
+import com.sqsmv.sqsfulfillment.database.lens.LensContract;
+import com.sqsmv.sqsfulfillment.database.packline.PackLineContract;
+import com.sqsmv.sqsfulfillment.database.packresetscan.PackResetScanContract;
+import com.sqsmv.sqsfulfillment.database.scanner.ScannerContract;
+import com.sqsmv.sqsfulfillment.database.shipto.ShipToContract;
+
 public class DBAdapter extends SQLiteOpenHelper
 {
-	public static final String DATABASE_NAME = "FulfillmentDB";
-	
-	public static final int DATABASE_VERSION = 1;
+	private static final String DATABASE_NAME = "FulfillmentDB";
+	private static final int DATABASE_VERSION = 1;
+
+    private static final DBContract[] xmlContracts = {new InvoiceContract(), new ShipToContract(), new PackContract(), new PackLineContract(), new PackagingContract(),
+                                                     new LensContract(), new ConfigContract(), new ScannerContract()};
+    private static final DBContract[] scanContracts = {new FulfillmentScanContract(), new PackResetScanContract()};
 
     public DBAdapter(Context ctx)
     {
@@ -18,92 +32,38 @@ public class DBAdapter extends SQLiteOpenHelper
 	@Override
 	public void onCreate(SQLiteDatabase db)
     {
-		db.execSQL(InvoiceContract.CREATE_TABLE_INVOICE);
-        db.execSQL(ShipToContract.CREATE_TABLE_SHIPTO);
-        db.execSQL(PackContract.CREATE_TABLE_PACK);
-        db.execSQL(PackLineContract.CREATE_TABLE_PACKLINE);
-        db.execSQL(PackagingContract.CREATE_TABLE_PACKAGING);
-        db.execSQL(LensContract.CREATE_TABLE_LENS);
-        db.execSQL(ConfigContract.CREATE_TABLE_CONFIG);
-        db.execSQL(ScannerContract.CREATE_TABLE_SCANNER);
-        //db.execSQL(PackRecreateRulesContract.CREATE_TABLE_PACKRECREATERULES);
-        db.execSQL(FulfillmentScanContract.CREATE_TABLE_FULFILLMENTSCAN);
-        db.execSQL(PackResetScanContract.CREATE_TABLE_PACKRESETSCAN);
-        //db.execSQL(PackRecreateScanContract.CREATE_TABLE_PACKRECREATESCAN);
-        //db.execSQL(ExportTrackingContract.CREATE_TABLE_EXPORTTRACKING);
-	}
+        createTables(db, xmlContracts);
+        createTables(db, scanContracts);
+    }
 
 	@Override
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion)
     {
-        db.execSQL(InvoiceContract.DROP_TABLE_INVOICE);
-        db.execSQL(InvoiceContract.CREATE_TABLE_INVOICE);
-
-        db.execSQL(ShipToContract.DROP_TABLE_SHIPTO);
-        db.execSQL(ShipToContract.CREATE_TABLE_SHIPTO);
-
-        db.execSQL(PackContract.DROP_TABLE_PACK);
-        db.execSQL(PackContract.CREATE_TABLE_PACK);
-
-        db.execSQL(PackLineContract.DROP_TABLE_PACKLINE);
-        db.execSQL(PackLineContract.CREATE_TABLE_PACKLINE);
-
-        db.execSQL(PackagingContract.DROP_TABLE_PACKAGING);
-        db.execSQL(PackagingContract.CREATE_TABLE_PACKAGING);
-
-        db.execSQL(LensContract.DROP_TABLE_LENS);
-        db.execSQL(LensContract.CREATE_TABLE_LENS);
-
-        db.execSQL(ConfigContract.DROP_TABLE_CONFIG);
-        db.execSQL(ConfigContract.CREATE_TABLE_CONFIG);
-
-        db.execSQL(ScannerContract.DROP_TABLE_SCANNER);
-        db.execSQL(ScannerContract.CREATE_TABLE_SCANNER);
-
-        //db.execSQL(PackRecreateRulesContract.DROP_TABLE_PACKRECREATERULES);
-        //db.execSQL(PackRecreateRulesContract.CREATE_TABLE_PACKRECREATERULES);
-
-        db.execSQL(FulfillmentScanContract.DROP_TABLE_FULFILLMENTSCAN);
-        db.execSQL(FulfillmentScanContract.CREATE_TABLE_FULFILLMENTSCAN);
-
-        db.execSQL(PackResetScanContract.DROP_TABLE_PACKRESETSCAN);
-        db.execSQL(PackResetScanContract.CREATE_TABLE_PACKRESETSCAN);
-
-        //db.execSQL(PackRecreateScanContract.DROP_TABLE_PACKRECREATESCAN);
-        //db.execSQL(PackRecreateScanContract.CREATE_TABLE_PACKRECREATESCAN);
-
-        //db.execSQL(ExportTrackingContract.DROP_TABLE_EXPORTTRACKING);
-        //db.execSQL(ExportTrackingContract.CREATE_TABLE_EXPORTTRACKING);
-	}
+        resetTables(db, xmlContracts);
+        resetTables(db, scanContracts);
+    }
 
     public void resetAll()
     {
         SQLiteDatabase db = getWritableDatabase();
-
-        db.execSQL(InvoiceContract.DROP_TABLE_INVOICE);
-        db.execSQL(InvoiceContract.CREATE_TABLE_INVOICE);
-
-        db.execSQL(ShipToContract.DROP_TABLE_SHIPTO);
-        db.execSQL(ShipToContract.CREATE_TABLE_SHIPTO);
-
-        db.execSQL(PackContract.DROP_TABLE_PACK);
-        db.execSQL(PackContract.CREATE_TABLE_PACK);
-
-        db.execSQL(PackLineContract.DROP_TABLE_PACKLINE);
-        db.execSQL(PackLineContract.CREATE_TABLE_PACKLINE);
-
-        db.execSQL(PackagingContract.DROP_TABLE_PACKAGING);
-        db.execSQL(PackagingContract.CREATE_TABLE_PACKAGING);
-
-        db.execSQL(LensContract.DROP_TABLE_LENS);
-        db.execSQL(LensContract.CREATE_TABLE_LENS);
-
-        db.execSQL(ConfigContract.DROP_TABLE_CONFIG);
-        db.execSQL(ConfigContract.CREATE_TABLE_CONFIG);
-
-        db.execSQL(ScannerContract.DROP_TABLE_SCANNER);
-        db.execSQL(ScannerContract.CREATE_TABLE_SCANNER);
-
+        resetTables(db, xmlContracts);
         db.close();
+    }
+
+    private void createTables(SQLiteDatabase db, DBContract[] dbContracts)
+    {
+        for(DBContract dbContract : dbContracts)
+        {
+            db.execSQL(dbContract.getTableCreateString());
+        }
+    }
+
+    private void resetTables(SQLiteDatabase db, DBContract[] dbContracts)
+    {
+        for(DBContract dbContract : dbContracts)
+        {
+            db.execSQL(dbContract.getTableDropString());
+            db.execSQL(dbContract.getTableCreateString());
+        }
     }
 }

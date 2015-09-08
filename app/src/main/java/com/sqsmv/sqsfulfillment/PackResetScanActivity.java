@@ -29,9 +29,9 @@ import android.widget.TextView;
 import android.widget.ToggleButton;
 
 import com.socketmobile.apiintegration.ScanAPIApplication;
-import com.sqsmv.sqsfulfillment.database.PackRecord;
-import com.sqsmv.sqsfulfillment.database.PackResetScanContract;
-import com.sqsmv.sqsfulfillment.database.PackResetScanDataAccess;
+import com.sqsmv.sqsfulfillment.database.pack.PackRecord;
+import com.sqsmv.sqsfulfillment.database.packresetscan.PackResetScanContract;
+import com.sqsmv.sqsfulfillment.database.packresetscan.PackResetScanDataAccess;
 
 import org.cory.libraries.MoreDateFunctions;
 import org.cory.libraries.QuickToast;

@@ -4,13 +4,13 @@ package com.sqsmv.sqsfulfillment.database;
 
 public interface DBContract
 {
-    public String getTableName();
+    String getTableName();
 
-    public String getTableCreateString();
+    String getTableCreateString();
 
-    public String getTableDropString();
+    String getTableDropString();
 
-    public String getPrimaryKeyName();
+    String getPrimaryKeyName();
 
-    public String[] getColumnNames();
+    String[] getColumnNames();
 }

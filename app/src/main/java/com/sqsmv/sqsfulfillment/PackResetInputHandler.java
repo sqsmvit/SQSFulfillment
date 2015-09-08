@@ -2,10 +2,10 @@ package com.sqsmv.sqsfulfillment;
 
 import android.content.Context;
 
-import com.sqsmv.sqsfulfillment.database.PackDataAccess;
-import com.sqsmv.sqsfulfillment.database.PackRecord;
-import com.sqsmv.sqsfulfillment.database.PackResetScanDataAccess;
-import com.sqsmv.sqsfulfillment.database.PackResetScanRecord;
+import com.sqsmv.sqsfulfillment.database.pack.PackDataAccess;
+import com.sqsmv.sqsfulfillment.database.pack.PackRecord;
+import com.sqsmv.sqsfulfillment.database.packresetscan.PackResetScanDataAccess;
+import com.sqsmv.sqsfulfillment.database.packresetscan.PackResetScanRecord;
 
 import org.cory.libraries.MoreDateFunctions;
 

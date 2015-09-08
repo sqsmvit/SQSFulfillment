@@ -1,5 +1,7 @@
 package com.sqsmv.sqsfulfillment.database;
 
+import com.sqsmv.sqsfulfillment.database.packaging.PackagingRecord;
+
 import junit.framework.TestCase;
 
 public class DataRecordTest extends TestCase

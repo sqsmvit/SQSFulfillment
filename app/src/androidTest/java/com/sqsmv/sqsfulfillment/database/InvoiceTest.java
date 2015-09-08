@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.test.ActivityUnitTestCase;
 
 import com.sqsmv.sqsfulfillment.StartupActivity;
+import com.sqsmv.sqsfulfillment.database.invoice.InvoiceDataAccess;
 
 public class InvoiceTest extends ActivityUnitTestCase<StartupActivity>
 {

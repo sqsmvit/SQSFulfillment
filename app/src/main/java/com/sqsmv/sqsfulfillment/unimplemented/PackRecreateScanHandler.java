@@ -3,8 +3,8 @@ package com.sqsmv.sqsfulfillment.unimplemented;
 import android.content.Context;
 
 import com.sqsmv.sqsfulfillment.database.DataRecord;
-import com.sqsmv.sqsfulfillment.database.PackDataAccess;
-import com.sqsmv.sqsfulfillment.database.PackRecord;
+import com.sqsmv.sqsfulfillment.database.pack.PackDataAccess;
+import com.sqsmv.sqsfulfillment.database.pack.PackRecord;
 import com.sqsmv.sqsfulfillment.database.unimplemented.PackRecreateScanDataAccess;
 import com.sqsmv.sqsfulfillment.database.unimplemented.PackRecreateScanRecord;
 

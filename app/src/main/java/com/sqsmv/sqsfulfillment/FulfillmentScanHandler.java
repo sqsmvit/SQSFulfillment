@@ -2,15 +2,15 @@ package com.sqsmv.sqsfulfillment;
 
 import android.content.Context;
 
-import com.sqsmv.sqsfulfillment.database.ConfigRecord;
-import com.sqsmv.sqsfulfillment.database.FulfillmentScanDataAccess;
-import com.sqsmv.sqsfulfillment.database.FulfillmentScanRecord;
-import com.sqsmv.sqsfulfillment.database.InvoiceDataAccess;
-import com.sqsmv.sqsfulfillment.database.InvoiceRecord;
-import com.sqsmv.sqsfulfillment.database.PackDataAccess;
-import com.sqsmv.sqsfulfillment.database.PackRecord;
-import com.sqsmv.sqsfulfillment.database.ShipToDataAccess;
-import com.sqsmv.sqsfulfillment.database.ShipToRecord;
+import com.sqsmv.sqsfulfillment.database.config.ConfigRecord;
+import com.sqsmv.sqsfulfillment.database.fulfillmentscan.FulfillmentScanDataAccess;
+import com.sqsmv.sqsfulfillment.database.fulfillmentscan.FulfillmentScanRecord;
+import com.sqsmv.sqsfulfillment.database.invoice.InvoiceDataAccess;
+import com.sqsmv.sqsfulfillment.database.invoice.InvoiceRecord;
+import com.sqsmv.sqsfulfillment.database.pack.PackDataAccess;
+import com.sqsmv.sqsfulfillment.database.pack.PackRecord;
+import com.sqsmv.sqsfulfillment.database.shipto.ShipToDataAccess;
+import com.sqsmv.sqsfulfillment.database.shipto.ShipToRecord;
 
 import org.cory.libraries.MoreDateFunctions;
 

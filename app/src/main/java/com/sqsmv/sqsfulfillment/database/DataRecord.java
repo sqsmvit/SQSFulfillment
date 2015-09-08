@@ -4,13 +4,13 @@ import android.database.Cursor;
 
 public interface DataRecord
 {
-    public DataRecord newCopy();
+    DataRecord newCopy();
 
-    public void setValueByKey(String key, String data);
+    void setValueByKey(String key, String data);
 
-    public String getValueByKey(String key);
+    String getValueByKey(String key);
 
-    public boolean buildWithCursor(Cursor dbCursor);
+    boolean buildWithCursor(Cursor dbCursor);
 
-    public void clearRecord();
+    void clearRecord();
 }

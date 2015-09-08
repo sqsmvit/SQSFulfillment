@@ -6,7 +6,9 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Environment;
 
-import com.sqsmv.sqsfulfillment.database.FulfillmentScanDataAccess;
+import com.sqsmv.sqsfulfillment.database.DataAccess;
+import com.sqsmv.sqsfulfillment.database.fulfillmentscan.FulfillmentScanDataAccess;
+import com.sqsmv.sqsfulfillment.database.packresetscan.PackResetScanDataAccess;
 
 import java.io.File;
 
@@ -29,19 +31,26 @@ public class AppUpdateService extends IntentService
         DroidConfigManager appConfig = new DroidConfigManager(this);
 
         FulfillmentScanDataAccess fulfillmentScanDataAccess = new FulfillmentScanDataAccess(this);
-        fulfillmentScanDataAccess.open();
-        Cursor fulfilledInvoicesCursor = fulfillmentScanDataAccess.selectAll();
-        if(fulfilledInvoicesCursor.getCount() > 0)
-        {
-            while(!ScanWriter.exportFile(this, fulfilledInvoicesCursor, ScanSource.FulfillmentScans));
-            fulfillmentScanDataAccess.deleteAll();
-        }
-        fulfillmentScanDataAccess.close();
+        quickExportScan(fulfillmentScanDataAccess, ScanSource.FulfillmentScans);
+        PackResetScanDataAccess packResetScanDataAccess = new PackResetScanDataAccess(this);
+        quickExportScan(packResetScanDataAccess, ScanSource.ResetScans);
 
         downloadAPK();
         String dbxFileRev = dropboxManager.getDbxFileRev("/out/" + apkFileName);
         appConfig.accessString(DroidConfigManager.CURRENT_APK_REV, dbxFileRev, "");
         updateApp();
+    }
+
+    private void quickExportScan(DataAccess exportDataAccess, ScanSource exportScanSource)
+    {
+        exportDataAccess.open();
+        Cursor fulfilledInvoicesCursor = exportDataAccess.selectAll();
+        if(fulfilledInvoicesCursor.getCount() > 0)
+        {
+            while(!ScanWriter.exportFile(this, fulfilledInvoicesCursor, exportScanSource));
+            exportDataAccess.deleteAll();
+        }
+        exportDataAccess.close();
     }
 
     private void downloadAPK()

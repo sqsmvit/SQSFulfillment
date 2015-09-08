@@ -8,15 +8,15 @@ import android.content.Intent;
 import android.os.Environment;
 import android.support.v4.app.NotificationCompat;
 
-import com.sqsmv.sqsfulfillment.database.ConfigDataAccess;
+import com.sqsmv.sqsfulfillment.database.config.ConfigDataAccess;
 import com.sqsmv.sqsfulfillment.database.DataAccess;
-import com.sqsmv.sqsfulfillment.database.InvoiceDataAccess;
-import com.sqsmv.sqsfulfillment.database.LensDataAccess;
-import com.sqsmv.sqsfulfillment.database.PackDataAccess;
-import com.sqsmv.sqsfulfillment.database.PackLineDataAccess;
-import com.sqsmv.sqsfulfillment.database.PackagingDataAccess;
-import com.sqsmv.sqsfulfillment.database.ScannerDataAccess;
-import com.sqsmv.sqsfulfillment.database.ShipToDataAccess;
+import com.sqsmv.sqsfulfillment.database.invoice.InvoiceDataAccess;
+import com.sqsmv.sqsfulfillment.database.lens.LensDataAccess;
+import com.sqsmv.sqsfulfillment.database.pack.PackDataAccess;
+import com.sqsmv.sqsfulfillment.database.packline.PackLineDataAccess;
+import com.sqsmv.sqsfulfillment.database.packaging.PackagingDataAccess;
+import com.sqsmv.sqsfulfillment.database.scanner.ScannerDataAccess;
+import com.sqsmv.sqsfulfillment.database.shipto.ShipToDataAccess;
 import com.sqsmv.sqsfulfillment.database.XMLDataAccess;
 
 import org.cory.libraries.FileHandling;
