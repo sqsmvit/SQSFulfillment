@@ -16,10 +16,12 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Vibrator;
 import android.text.InputType;
+import android.view.GestureDetector;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -38,11 +40,11 @@ import com.sqsmv.sqsfulfillment.database.invoice.InvoiceRecord;
 import com.sqsmv.sqsfulfillment.database.lens.LensDataAccess;
 import com.sqsmv.sqsfulfillment.database.lens.LensRecord;
 import com.sqsmv.sqsfulfillment.database.pack.PackDataAccess;
-import com.sqsmv.sqsfulfillment.database.packline.PackLineDataAccess;
-import com.sqsmv.sqsfulfillment.database.packline.PackLineRecord;
 import com.sqsmv.sqsfulfillment.database.pack.PackRecord;
 import com.sqsmv.sqsfulfillment.database.packaging.PackagingDataAccess;
 import com.sqsmv.sqsfulfillment.database.packaging.PackagingRecord;
+import com.sqsmv.sqsfulfillment.database.packline.PackLineDataAccess;
+import com.sqsmv.sqsfulfillment.database.packline.PackLineRecord;
 import com.sqsmv.sqsfulfillment.database.scanner.ScannerDataAccess;
 import com.sqsmv.sqsfulfillment.database.scanner.ScannerRecord;
 import com.sqsmv.sqsfulfillment.database.shipto.ShipToRecord;
@@ -88,6 +90,9 @@ public class FulfillmentScanActivity extends Activity
     private ArrayList<PackRecord> scannedPacks;
     private ArrayList<ConfigRecord> possibleConfigs;
 
+    private WakeTimer wakeTimer;
+    private GestureDetector gestureDetector;
+
     private boolean scannerLock;
     private boolean doubleMode;
     private boolean tempKeepScanner;
@@ -128,6 +133,10 @@ public class FulfillmentScanActivity extends Activity
         recommendedDoublePackListView = (ListView)findViewById(R.id.RecommendedPackList);
         scannedPackListView = (ListView)findViewById(R.id.ScannedPackList);
         possibleConfigListView = (ListView)findViewById(R.id.PossibleConfigList);
+
+        wakeTimer = new WakeTimer(fullfillNumberTextView);
+        gestureDetector = new GestureDetector(this, new SwipeUpMenuListener(this));
+
         scannedPacks = new ArrayList<>();
         possibleConfigs = new ArrayList<>();
         doubleMode = false;
@@ -234,6 +243,7 @@ public class FulfillmentScanActivity extends Activity
         {
             ScanAPIApplication.getApplicationInstance().forceRelease();
         }
+        wakeTimer.killTimer();
 
         super.onStop();
     }
@@ -263,6 +273,14 @@ public class FulfillmentScanActivity extends Activity
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event)
+    {
+        wakeTimer.killTimer();
+        gestureDetector.onTouchEvent(event);
+        return super.onTouchEvent(event);
     }
 
     private void launchReviewActivity()
@@ -693,6 +711,8 @@ public class FulfillmentScanActivity extends Activity
             if(intent.getAction().equalsIgnoreCase(ScanAPIApplication.NOTIFY_DECODED_DATA))
             {
                 String scanData = new String(intent.getCharArrayExtra(ScanAPIApplication.EXTRA_DECODEDDATA));
+
+                wakeTimer.updateTimerThread();
 
                 if(!doubleMode)
                 {

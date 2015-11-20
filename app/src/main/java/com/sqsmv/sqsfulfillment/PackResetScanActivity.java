@@ -11,11 +11,13 @@ import android.database.Cursor;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.text.InputType;
+import android.view.GestureDetector;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
@@ -50,6 +52,8 @@ public class PackResetScanActivity extends Activity
     private TextView scanIdView;
     private TextView scannerInitialsView;
 
+    private WakeTimer wakeTimer;
+    private GestureDetector gestureDetector;
     private PackResetScanCursorAdapter packResetScanCursorAdapter;
 
     private boolean isSinglePackScanMode;
@@ -72,8 +76,11 @@ public class PackResetScanActivity extends Activity
         packNameView = (TextView)findViewById(R.id.PackNameView);
         packIdEntry = (EditText)findViewById(R.id.PackIDEntry);
         quantityEntry = (EditText)findViewById(R.id.QuantityEntry);
-        scanIdView = (TextView)findViewById(R.id.ScanIdView);;
-        scannerInitialsView = (TextView)findViewById(R.id.ScannerInitialsView);;
+        scanIdView = (TextView)findViewById(R.id.ScanIdView);
+        scannerInitialsView = (TextView)findViewById(R.id.ScannerInitialsView);
+
+        wakeTimer = new WakeTimer(packIdEntry);
+        gestureDetector = new GestureDetector(this, new SwipeUpMenuListener(this));
 
         isSinglePackScanMode = false;
 
@@ -182,6 +189,8 @@ public class PackResetScanActivity extends Activity
         appConfig.accessString(DroidConfigManager.RESET_SCAN_ID, scanId, "");
         appConfig.accessString(DroidConfigManager.RESET_SCANNER_INITIALS, scannerInitials, "");
 
+        wakeTimer.killTimer();
+
         super.onPause();
     }
 
@@ -206,6 +215,14 @@ public class PackResetScanActivity extends Activity
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event)
+    {
+        wakeTimer.killTimer();
+        gestureDetector.onTouchEvent(event);
+        return super.onTouchEvent(event);
     }
 
     private void commitScans()
@@ -445,6 +462,9 @@ public class PackResetScanActivity extends Activity
             if(intent.getAction().equalsIgnoreCase(ScanAPIApplication.NOTIFY_DECODED_DATA))
             {
                 String scanData = new String(intent.getCharArrayExtra(ScanAPIApplication.EXTRA_DECODEDDATA));
+
+                wakeTimer.updateTimerThread();
+
                 if(!isSinglePackScanMode)
                 {
                     handleScanResponse(packResetInputHandler.handleRegularScan(scanData, quantityEntry.getText().toString(), scanId, scannerInitials));

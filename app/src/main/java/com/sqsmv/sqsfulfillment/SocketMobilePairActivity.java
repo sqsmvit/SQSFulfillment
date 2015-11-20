@@ -93,7 +93,7 @@ public class SocketMobilePairActivity extends Activity
         // Unit of Measure, pixel, cm, or inch
         barcode.setUom(IBarcode.UOM_PIXEL);
         // barcode bar module width (X) in pixel
-        barcode.setX(1f);
+        barcode.setX(2f);
         // barcode bar module height (Y) in pixel
         barcode.setY(75f);
         // set barcode width
