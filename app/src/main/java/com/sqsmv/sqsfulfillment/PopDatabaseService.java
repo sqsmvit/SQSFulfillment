@@ -8,16 +8,16 @@ import android.content.Intent;
 import android.os.Environment;
 import android.support.v4.app.NotificationCompat;
 
-import com.sqsmv.sqsfulfillment.database.config.ConfigDataAccess;
 import com.sqsmv.sqsfulfillment.database.DataAccess;
+import com.sqsmv.sqsfulfillment.database.XMLDataAccess;
+import com.sqsmv.sqsfulfillment.database.config.ConfigDataAccess;
 import com.sqsmv.sqsfulfillment.database.invoice.InvoiceDataAccess;
 import com.sqsmv.sqsfulfillment.database.lens.LensDataAccess;
 import com.sqsmv.sqsfulfillment.database.pack.PackDataAccess;
-import com.sqsmv.sqsfulfillment.database.packline.PackLineDataAccess;
 import com.sqsmv.sqsfulfillment.database.packaging.PackagingDataAccess;
+import com.sqsmv.sqsfulfillment.database.packline.PackLineDataAccess;
 import com.sqsmv.sqsfulfillment.database.scanner.ScannerDataAccess;
 import com.sqsmv.sqsfulfillment.database.shipto.ShipToDataAccess;
-import com.sqsmv.sqsfulfillment.database.XMLDataAccess;
 
 import org.cory.libraries.FileHandling;
 
@@ -38,9 +38,8 @@ public class PopDatabaseService extends IntentService
 	@Override
 	protected void onHandleIntent(Intent intent)
     {
-        DroidConfigManager appConfig = new DroidConfigManager(this);
-
-		makeNotification("Dropbox Download Started", false);
+        makeNotification("Dropbox Download Started", false);
+        boolean isLockReleased = false;
 
         //Download files.zip from DropBox
         downloadDBXZip();
@@ -60,7 +59,8 @@ public class PopDatabaseService extends IntentService
                 startUpdateThreads(xmlDataAccess, necessaryUpdateThreads);
             }
             joinUpdateThreads(necessaryUpdateThreads);
-            appConfig.accessBoolean(DroidConfigManager.UPDATE_LOCK, false, true);
+            UpdateLauncher.releaseUpdateLock();
+            isLockReleased = true;
 
             XMLDataAccess[] otherDataAccesses = new XMLDataAccess[]{new ShipToDataAccess(this), new PackLineDataAccess(this), new PackagingDataAccess(this), new LensDataAccess(this)};
             ArrayList<Thread> otherUpdateThreads = new ArrayList<>();
@@ -74,7 +74,10 @@ public class PopDatabaseService extends IntentService
         {
             e.printStackTrace();
         }
-        appConfig.accessBoolean(DroidConfigManager.UPDATE_LOCK, false, true);
+        if(!isLockReleased)
+        {
+            UpdateLauncher.releaseUpdateLock();
+        }
         makeNotification("Database Update Finished", true);
 	}
 

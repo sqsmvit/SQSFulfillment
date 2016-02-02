@@ -103,12 +103,9 @@ public abstract class DataAccess
 
         query.clearBindings();
 
-        for(ArrayList<String> prod : batch)
+        for(ArrayList<String> record : batch)
         {
-            for(int i = 0; i < getTableColumns().length; i++)
-            {
-                query.bindString(i+1, prod.get(i));
-            }
+            query.bindAllArgsAsStrings(record.toArray(new String[record.size()]));
             query.executeInsert();
         }
         query.close();

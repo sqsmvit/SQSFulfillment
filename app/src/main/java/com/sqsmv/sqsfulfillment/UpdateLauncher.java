@@ -6,8 +6,11 @@ import android.content.Intent;
 
 import org.cory.libraries.AppInfo;
 
+import java.util.concurrent.Semaphore;
+
 public class UpdateLauncher
 {
+    private static Semaphore updateLock = new Semaphore(0);
     private Context context;
     private DroidConfigManager appConfig;
     private DropboxManager dropboxManager;
@@ -24,14 +27,13 @@ public class UpdateLauncher
         final ProgressDialog pausingDialog = ProgressDialog.show(context, "Updating Database", "Please Stay in Wifi Range...", true);
         Intent popIntent = new Intent(context, PopDatabaseService.class);
         context.startService(popIntent);
-        appConfig.accessBoolean(DroidConfigManager.UPDATE_LOCK, true, true);
 
         Thread pausingDialogThread = new Thread()
         {
             @Override
             public void run()
             {
-                while(appConfig.accessBoolean(DroidConfigManager.UPDATE_LOCK, null, true));
+                acquireUpdateLock();
                 pausingDialog.dismiss();
             }
         };
@@ -65,5 +67,22 @@ public class UpdateLauncher
         ProgressDialog.show(context, "Updating Application", "Scans have been committed. Please Stay in Wifi Range...", true);
         Intent appUpdateIntent = new Intent(context, AppUpdateService.class);
         context.startService(appUpdateIntent);
+    }
+
+    public static void acquireUpdateLock()
+    {
+        try
+        {
+            updateLock.acquire();
+        }
+        catch(InterruptedException e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+    public static void releaseUpdateLock()
+    {
+        updateLock.release();
     }
 }
