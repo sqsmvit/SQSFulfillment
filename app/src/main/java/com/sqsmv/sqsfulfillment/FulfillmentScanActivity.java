@@ -93,7 +93,7 @@ public class FulfillmentScanActivity extends Activity
     private WakeTimer wakeTimer;
     private GestureDetector gestureDetector;
 
-    private boolean scannerLock;
+    //private boolean scannerLock;
     private boolean doubleMode;
     private boolean tempKeepScanner;
 
@@ -206,7 +206,7 @@ public class FulfillmentScanActivity extends Activity
         openDataAccesses();
         displayTotalFulfillments();
 
-        scannerLock = appConfig.accessBoolean(DroidConfigManager.SCANNER_LOCK, null, false);
+        //scannerLock = appConfig.accessBoolean(DroidConfigManager.SCANNER_LOCK, null, false);
         String scannerName = appConfig.accessString(DroidConfigManager.CURRENT_SCANNER_NAME, null, "");
         currentFulfillmentScanRecord.accessScannerName(scannerName);
         if(currentFulfillmentScanRecord.accessScannerName(null).isEmpty())
@@ -238,13 +238,13 @@ public class FulfillmentScanActivity extends Activity
     {
         // unregister the scanner
         unregisterReceiver(receiver);
-
+        /*
         if(!scannerLock && !tempKeepScanner)
         {
             ScanAPIApplication.getApplicationInstance().forceRelease();
         }
         wakeTimer.killTimer();
-
+        */
         super.onStop();
     }
 
@@ -745,9 +745,5 @@ public class FulfillmentScanActivity extends Activity
 
         filter = new IntentFilter(ScanAPIApplication.NOTIFY_ERROR_MESSAGE);
         registerReceiver(receiver, filter);
-
-        // increasing the Application View count from 0 to 1 will
-        // cause the application to open and initialize ScanAPI
-        ScanAPIApplication.getApplicationInstance().increaseViewCount();
     }
 }

@@ -10,6 +10,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.dropbox.core.android.Auth;
+
 import org.cory.libraries.AppInfo;
 import org.cory.libraries.DroidInfo;
 import org.cory.libraries.FileHandling;
@@ -34,6 +36,7 @@ public class StartupActivity extends Activity
 
         appConfig = new DroidConfigManager(this);
         dropboxManager = new DropboxManager(this);
+        updateLauncher = new UpdateLauncher(this);
 
         Button launchFulfillmentScanButton = (Button)findViewById(R.id.LaunchFulfillmentScanButton);
 
@@ -55,41 +58,44 @@ public class StartupActivity extends Activity
     {
         super.onResume();
 
-        if(dropboxManager.finishAuthentication())
+        String accessToken = appConfig.accessString(DroidConfigManager.DROPBOX_ACCESS_TOKEN, null, null);
+        if (accessToken == null)
         {
-            String accessToken = dropboxManager.getOAuth2AccessToken();
-            appConfig.accessString(DroidConfigManager.DROPBOX_ACCESS_TOKEN, accessToken, "");
+            accessToken = Auth.getOAuth2Token();
+            if (accessToken != null)
+            {
+                appConfig.accessString(DroidConfigManager.DROPBOX_ACCESS_TOKEN, accessToken, null);
+                dropboxManager.initDbxClient(accessToken);
+            }
+            else
+            {
+                if(DroidInfo.isWiFiConnected(this))
+                {
+                    dropboxManager.linkDropboxAccount();
+                }
+                else
+                {
+                    QuickToast.makeLongToast(this, "Must be connected to WiFi to link to Dropbox!");
+                    finish();
+                }
+            }
         }
-        linkDropboxAccount();
-        updateLauncher = new UpdateLauncher(this);
+        else
+        {
+            dropboxManager.initDbxClient(accessToken);
+        }
+    }
 
+    private void launchPackResetScanActivity()
+    {
+        Intent intent = new Intent(this, PackResetScanActivity.class);
+        startActivity(intent);
     }
 
     private void launchFulfillmentScanActivity()
     {
         Intent intent = new Intent(this, FulfillmentScanActivity.class);
         startActivity(intent);
-    }
-
-    private void linkDropboxAccount()
-    {
-        if(DroidInfo.isWiFiConnected(this))
-        {
-            String accessToken = appConfig.accessString(DroidConfigManager.DROPBOX_ACCESS_TOKEN, null, "");
-            if(!accessToken.isEmpty())
-            {
-                dropboxManager.setStaticOAuth2AccessToken(accessToken);
-            }
-            else
-            {
-                dropboxManager.linkDropboxAccount();
-            }
-        }
-        else
-        {
-            QuickToast.makeToast(this, "WiFi not connected");
-            finish();
-        }
     }
 
     private void checkDailyTasks()
@@ -113,7 +119,8 @@ public class StartupActivity extends Activity
         }
         else
         {
-            launchFulfillmentScanActivity();
+            //launchFulfillmentScanActivity();
+            launchPackResetScanActivity();
         }
     }
 
@@ -128,7 +135,8 @@ public class StartupActivity extends Activity
                 try
                 {
                     blockingThread.join();
-                    launchFulfillmentScanActivity();
+                    //launchFulfillmentScanActivity();
+                    launchPackResetScanActivity();
                 }
                 catch(InterruptedException e)
                 {

@@ -2,14 +2,14 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 21
-    buildToolsVersion "21.1.2"
+    buildToolsVersion '25.0.0'
 
     defaultConfig {
         applicationId "com.sqsmv.sqsfulfillment"
         minSdkVersion 16
         targetSdkVersion 21
-        versionCode 1
-        versionName "1.03"
+        versionCode 2
+        versionName "2.00"
     }
     buildTypes {
         release {
@@ -20,12 +20,9 @@ android {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile fileTree(include: ['*.jar'], dir: 'libs')
     compile 'com.android.support:appcompat-v7:21.0.3'
-    compile files('libs/dropbox-sync-sdk-android.jar')
     compile files('libs/ScanAPI.jar')
     compile files('libs/ScanAPIFactory.jar')
     compile files('libs/OnBarcode.AndroidBarcode.jar')
-    compile files('libs/dropbox-android-sdk-1.6.3.jar')
-    compile files('libs/json_simple-1.1.jar')
 }

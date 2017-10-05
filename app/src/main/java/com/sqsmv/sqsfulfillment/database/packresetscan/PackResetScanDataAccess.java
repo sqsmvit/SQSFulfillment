@@ -25,6 +25,16 @@ public class PackResetScanDataAccess extends DataAccess
         return new PackResetScanRecord();
     }
 
+    public Cursor selectScansForExport()
+    {
+        String[] cols = new String[]{PackResetScanContract.COLUMN_NAME_FKPACKID, "SUM(" + PackResetScanContract.COLUMN_NAME_QUANTITY + ") As Total",
+                                   PackResetScanContract.COLUMN_NAME_SCANID, PackResetScanContract.COLUMN_NAME_SCANDATE,
+                                   PackResetScanContract.COLUMN_NAME_SCANNERINITIALS, PackResetScanContract.COLUMN_NAME_SCANNEDPACKNAME};
+        String groupBy = PackResetScanContract.COLUMN_NAME_FKPACKID + ", " + PackResetScanContract.COLUMN_NAME_SCANID + ", " +
+                PackResetScanContract.COLUMN_NAME_SCANNERINITIALS;
+        return db.query(contract.getTableName(), cols, null, null, groupBy, null, null);
+    }
+
     public Cursor selectReverseOrder()
     {
         String[] cols = new String[]{contract.getPrimaryKeyName(), PackResetScanContract.COLUMN_NAME_SCANNEDPACKNAME, PackResetScanContract.COLUMN_NAME_QUANTITY};

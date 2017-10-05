@@ -18,7 +18,7 @@ import com.sqsmv.sqsfulfillment.database.shipto.ShipToContract;
 public class DBAdapter extends SQLiteOpenHelper
 {
 	private static final String DATABASE_NAME = "FulfillmentDB";
-	private static final int DATABASE_VERSION = 1;
+	private static final int DATABASE_VERSION = 2;
 
     private static final DBContract[] xmlContracts = {new InvoiceContract(), new ShipToContract(), new PackContract(), new PackLineContract(), new PackagingContract(),
                                                      new LensContract(), new ConfigContract(), new ScannerContract()};

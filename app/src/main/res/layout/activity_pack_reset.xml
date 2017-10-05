@@ -17,19 +17,19 @@
         android:layout_marginBottom="@dimen/half_activity_vertical_margin"
         android:layout_alignParentTop="true"
         android:orientation="horizontal" >
-
+        <!--
         <Button
             android:id="@+id/PackResetBackButton"
             android:layout_width="@dimen/weight_field_size"
             android:layout_height="wrap_content"
             android:layout_weight=".5"
             android:text="@string/back_button_text" />
-
+        -->
         <Button
             android:id="@+id/PackResetCommitButton"
             android:layout_width="@dimen/weight_field_size"
             android:layout_height="wrap_content"
-            android:layout_weight=".5"
+            android:layout_weight=".8"
             android:text="@string/commit_button_text"/>
 
     </LinearLayout>

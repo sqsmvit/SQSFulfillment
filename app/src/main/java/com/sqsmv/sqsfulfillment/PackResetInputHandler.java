@@ -163,9 +163,9 @@ public class PackResetInputHandler
 
     private void insertScan(String pullMasterId, String quantity, String scanId, String scannerInitials)
     {
-        packResetScanDataAccess.insert(new PackResetScanRecord(currentPackRecord.accessPkPackId(null), pullMasterId,
-                                                               quantity, scanId, MoreDateFunctions.getNowFMTimestamp(),
-                                                               scannerInitials, currentPackRecord.accessPackName(null)));
+        packResetScanDataAccess.insert(new PackResetScanRecord(currentPackRecord.accessPkPackId(null), quantity,
+                                                                scanId, MoreDateFunctions.getTodaySlashMMDDYY(),
+                                                                scannerInitials, currentPackRecord.accessPackName(null)));
         currentPackRecord.clearRecord();
     }
 }

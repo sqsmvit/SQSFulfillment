@@ -160,14 +160,7 @@ public class AdminActivity extends Activity
                     public void onClick(DialogInterface dialog, int id)
                     {
                         DropboxManager dropboxManager = new DropboxManager(getApplicationContext());
-                        try
-                        {
-                            dropboxManager.writeToDropbox(exportFile, File.separator + "default" + File.separator + exportFile.getName(), false, true).join();
-                        }
-                        catch(InterruptedException e)
-                        {
-                            e.printStackTrace();
-                        }
+                        dropboxManager.writeToDropbox(exportFile, File.separator + "default" + File.separator + exportFile.getName());
                     }
                 })
                 .setNegativeButton("No", null);

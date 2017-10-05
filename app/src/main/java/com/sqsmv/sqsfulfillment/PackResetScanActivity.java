@@ -11,6 +11,7 @@ import android.database.Cursor;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.text.InputType;
+import android.util.Log;
 import android.view.GestureDetector;
 import android.view.Gravity;
 import android.view.KeyEvent;
@@ -51,11 +52,15 @@ public class PackResetScanActivity extends Activity
     private EditText quantityEntry;
     private TextView scanIdView;
     private TextView scannerInitialsView;
+    private EditText scannerInitialsInput;
+
+    private GestureDetector gestureDetector;
+    private AlertDialog initialsDialog;
 
     private WakeTimer wakeTimer;
-    private GestureDetector gestureDetector;
     private PackResetScanCursorAdapter packResetScanCursorAdapter;
 
+    private boolean scannerLock;
     private boolean isSinglePackScanMode;
     private String scanId;
     private String scannerInitials;
@@ -78,16 +83,18 @@ public class PackResetScanActivity extends Activity
         quantityEntry = (EditText)findViewById(R.id.QuantityEntry);
         scanIdView = (TextView)findViewById(R.id.ScanIdView);
         scannerInitialsView = (TextView)findViewById(R.id.ScannerInitialsView);
+        scannerInitialsInput = new EditText(this);
+        scannerInitialsInput.setGravity(Gravity.CENTER);
 
         wakeTimer = new WakeTimer(packIdEntry);
         gestureDetector = new GestureDetector(this, new SwipeUpMenuListener(this));
 
         isSinglePackScanMode = false;
 
-        Button packResetBackButton = (Button)findViewById(R.id.PackResetBackButton);
+        //Button packResetBackButton = (Button)findViewById(R.id.PackResetBackButton);
         Button packResetCommitButton = (Button)findViewById(R.id.PackResetCommitButton);
         ToggleButton manualScanModeToggle = (ToggleButton)findViewById(R.id.ScanTypeToggle);
-
+        /*
         packResetBackButton.setOnClickListener(new View.OnClickListener()
         {
             @Override
@@ -96,7 +103,7 @@ public class PackResetScanActivity extends Activity
                 onBackPressed();
             }
         });
-
+        */
         packResetCommitButton.setOnClickListener(new View.OnClickListener()
         {
             @Override
@@ -146,6 +153,7 @@ public class PackResetScanActivity extends Activity
             }
         });
 
+        buildInitialsDialog();
     }
 
     @Override
@@ -154,6 +162,7 @@ public class PackResetScanActivity extends Activity
         super.onStart();
 
         regBroadCastReceivers();
+        openDataAccesses();
     }
 
     @Override
@@ -161,8 +170,7 @@ public class PackResetScanActivity extends Activity
     {
         super.onResume();
 
-        openDataAccesses();
-
+        scannerLock = appConfig.accessBoolean(DroidConfigManager.SCANNER_LOCK, null, false);
         scanId = appConfig.accessString(DroidConfigManager.RESET_SCAN_ID, null, "");
         displayScanId();
 
@@ -172,7 +180,12 @@ public class PackResetScanActivity extends Activity
         displayScanInfo();
 
         scannerInitials = appConfig.accessString(DroidConfigManager.RESET_SCANNER_INITIALS, null, "");
+        scannerInitialsInput.setText(scannerInitials);
         displayScannerInitials();
+        if(scannerInitials.isEmpty() || scannerInitials.length() < 2)
+        {
+            promptScannerInitials();
+        }
 
         String lastUpdatedString = appConfig.accessString(appConfig.LAST_UPDATED, null, "");
         if(!MoreDateFunctions.getTodayYYMMDD().equals(lastUpdatedString))
@@ -184,8 +197,6 @@ public class PackResetScanActivity extends Activity
     @Override
     protected void onPause()
     {
-        closeDataAccesses();
-
         appConfig.accessString(DroidConfigManager.RESET_SCAN_ID, scanId, "");
         appConfig.accessString(DroidConfigManager.RESET_SCANNER_INITIALS, scannerInitials, "");
 
@@ -193,6 +204,28 @@ public class PackResetScanActivity extends Activity
 
         super.onPause();
     }
+
+    @Override
+    protected void onStop()
+    {
+        closeDataAccesses();
+
+        // unregister the scanner
+        unregisterReceiver(receiver);
+
+        if(!scannerLock)
+        {
+            ScanAPIApplication.getApplicationInstance().forceRelease();
+        }
+        wakeTimer.killTimer();
+        if(initialsDialog.isShowing())
+        {
+            initialsDialog.dismiss();
+        }
+
+        super.onStop();
+    }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu)
@@ -227,12 +260,16 @@ public class PackResetScanActivity extends Activity
 
     private void commitScans()
     {
-        Cursor packResetCursor = packResetScanDataAccess.selectAll();
+        Cursor packResetCursor = packResetScanDataAccess.selectScansForExport();
         if(packResetCursor.getCount() > 0)
         {
             if(ScanWriter.exportFile(this, packResetCursor, ScanSource.ResetScans))
             {
                 updateAfterCommit();
+            }
+            else
+            {
+                QuickToast.makeToast(this, "Error: Could not commit scans");
             }
         }
         else
@@ -251,6 +288,8 @@ public class PackResetScanActivity extends Activity
         appConfig.accessString(DroidConfigManager.RESET_SCANNER_INITIALS, "", "");
         displayScanId();
         displayScannerInitials();
+        scannerInitialsInput.setText(scannerInitials);
+        promptScannerInitials();
     }
 
     private void toggleScanMode()
@@ -269,6 +308,29 @@ public class PackResetScanActivity extends Activity
             packIdEntry.setEnabled(false);
             quantityEntry.setEnabled(false);
         }
+    }
+
+    private void buildInitialsDialog()
+    {
+        AlertDialog.Builder initialsDialogBuilder = new AlertDialog.Builder(this);
+
+        initialsDialogBuilder.setTitle("Scanner Initials Entry");
+        initialsDialogBuilder.setMessage("Enter Initials");
+
+        initialsDialogBuilder.setView(scannerInitialsInput);
+
+        initialsDialogBuilder.setPositiveButton("OK", new DialogInterface.OnClickListener()
+        {
+            public void onClick(DialogInterface dialog, int whichButton)
+            {
+                Log.d("buildInitialsDialog", "OKAY");
+                dialog.dismiss();
+                scannerInitials = scannerInitialsInput.getText().toString();
+                displayScannerInitials();
+            }
+        });
+        initialsDialog = initialsDialogBuilder.create();
+
     }
 
     private void openDataAccesses()
@@ -334,37 +396,17 @@ public class PackResetScanActivity extends Activity
         if(!scannerInitials.isEmpty() && scannerInitials.length() > 1)
         {
             scannerInitialsView.setText(scannerInitials);
-            scannerInitialsView.setBackgroundColor(Color.TRANSPARENT);
+            scannerInitialsView.setTextColor(Color.BLACK);
         }
         else
         {
             scannerInitialsView.setText("Input Initials");
-            scannerInitialsView.setBackgroundColor(Color.RED);
-            promptScannerInitials();
+            scannerInitialsView.setTextColor(Color.RED);
         }
     }
 
     private void promptScannerInitials()
     {
-        AlertDialog.Builder initialsDialog = new AlertDialog.Builder(this);
-
-        initialsDialog.setTitle("Scanner Initials Entry");
-        initialsDialog.setMessage("Enter Initials");
-
-        // Set an EditText view to get user input
-        final EditText input = new EditText(this);
-        input.setGravity(Gravity.CENTER);
-        input.setText(scannerInitials);
-        initialsDialog.setView(input);
-
-        initialsDialog.setPositiveButton("OK", new DialogInterface.OnClickListener()
-        {
-            public void onClick(DialogInterface dialog, int whichButton)
-            {
-                scannerInitials = input.getText().toString();
-                displayScannerInitials();
-            }
-        });
         initialsDialog.show();
     }
 
@@ -496,5 +538,9 @@ public class PackResetScanActivity extends Activity
 
         filter = new IntentFilter(ScanAPIApplication.NOTIFY_ERROR_MESSAGE);
         registerReceiver(receiver, filter);
+
+        // increasing the Application View count from 0 to 1 will
+        // cause the application to open and initialize ScanAPI
+        ScanAPIApplication.getApplicationInstance().increaseViewCount();
     }
 }

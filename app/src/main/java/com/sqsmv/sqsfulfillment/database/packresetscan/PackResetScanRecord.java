@@ -11,7 +11,6 @@ public class PackResetScanRecord implements DataRecord
 {
     private String _id;
     private String fkPackId;
-    private String fkPullMasterId;
     private String quantity;
     private String scanId;
     private String scanDate;
@@ -29,11 +28,10 @@ public class PackResetScanRecord implements DataRecord
         scannedPackName = "";
     }
 
-    public PackResetScanRecord(String packId, String pullMasterId, String packQuantity, String scanNum, String date, String initials, String packName)
+    public PackResetScanRecord(String packId, String packQuantity, String scanNum, String date, String initials, String packName)
     {
         _id = "null";
         fkPackId = packId;
-        fkPullMasterId = pullMasterId;
         quantity = packQuantity;
         scanId = scanNum;
         scanDate = date;
@@ -41,11 +39,10 @@ public class PackResetScanRecord implements DataRecord
         scannedPackName = packName;
     }
 
-    public PackResetScanRecord(String recId, String packId, String pullMasterId, String packQuantity, String scanNum, String date, String initials, String packName)
+    public PackResetScanRecord(String recId, String packId, String packQuantity, String scanNum, String date, String initials, String packName)
     {
         _id = recId;
         fkPackId = packId;
-        fkPullMasterId = pullMasterId;
         quantity = packQuantity;
         scanId = scanNum;
         scanDate = date;
@@ -69,15 +66,6 @@ public class PackResetScanRecord implements DataRecord
             fkPackId = packId;
         }
         return fkPackId;
-    }
-
-    public String accessFkPullMasterId(String pullMasterId)
-    {
-        if(pullMasterId != null)
-        {
-            fkPullMasterId = pullMasterId;
-        }
-        return fkPullMasterId;
     }
 
     public String accessQuantity(String packQuantity)
@@ -128,7 +116,7 @@ public class PackResetScanRecord implements DataRecord
     @Override
     public DataRecord newCopy()
     {
-        return new PackResetScanRecord(_id, fkPackId, fkPullMasterId, quantity, scanId, scanDate, scannerInitials, scannedPackName);
+        return new PackResetScanRecord(_id, fkPackId, quantity, scanId, scanDate, scannerInitials, scannedPackName);
     }
 
     @Override
@@ -141,9 +129,6 @@ public class PackResetScanRecord implements DataRecord
                 break;
             case PackResetScanContract.COLUMN_NAME_FKPACKID:
                 accessFkPackId(data);
-                break;
-            case PackResetScanContract.COLUMN_NAME_FKPULLMASTERID:
-                accessFkPullMasterId(data);
                 break;
             case PackResetScanContract.COLUMN_NAME_QUANTITY:
                 accessQuantity(data);
@@ -175,9 +160,6 @@ public class PackResetScanRecord implements DataRecord
                 break;
             case PackResetScanContract.COLUMN_NAME_FKPACKID:
                 value = accessFkPackId(null);
-                break;
-            case PackResetScanContract.COLUMN_NAME_FKPULLMASTERID:
-                value = accessFkPullMasterId(null);
                 break;
             case PackResetScanContract.COLUMN_NAME_QUANTITY:
                 value = accessQuantity(null);
@@ -224,7 +206,6 @@ public class PackResetScanRecord implements DataRecord
     {
         access_Id("");
         accessFkPackId("");
-        accessFkPullMasterId("");
         accessQuantity("");
         accessScanId("");
         accessScanDate("");

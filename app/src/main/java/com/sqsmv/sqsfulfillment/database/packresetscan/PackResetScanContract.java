@@ -8,7 +8,6 @@ public class PackResetScanContract implements DBContract, BaseColumns
 {
     protected static final String TABLE_NAME = "PackResetScan";
     public static final String COLUMN_NAME_FKPACKID = "fkpackid";
-    public static final String COLUMN_NAME_FKPULLMASTERID = "fkpullmasterid";
     public static final String COLUMN_NAME_QUANTITY = "quantity";
     public static final String COLUMN_NAME_SCANID = "scanid";
     public static final String COLUMN_NAME_SCANDATE = "scandate";
@@ -20,7 +19,6 @@ public class PackResetScanContract implements DBContract, BaseColumns
             {
                     _ID,
                     COLUMN_NAME_FKPACKID,
-                    COLUMN_NAME_FKPULLMASTERID,
                     COLUMN_NAME_QUANTITY,
                     COLUMN_NAME_SCANID,
                     COLUMN_NAME_SCANDATE,
@@ -31,7 +29,6 @@ public class PackResetScanContract implements DBContract, BaseColumns
             TABLE_NAME + "(" +
             _ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
             COLUMN_NAME_FKPACKID + " TEXT, " +
-            COLUMN_NAME_FKPULLMASTERID + " TEXT, " +
             COLUMN_NAME_QUANTITY + " TEXT, " +
             COLUMN_NAME_SCANID + " TEXT, " +
             COLUMN_NAME_SCANDATE + " TEXT, " +

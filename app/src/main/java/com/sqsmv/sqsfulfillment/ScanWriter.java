@@ -18,6 +18,7 @@ public class ScanWriter
     {
         boolean success = false;
         String directory = "";
+        String header = "";
         switch(scanSource)
         {
             case FulfillmentScans:
@@ -25,21 +26,15 @@ public class ScanWriter
                 break;
             case ResetScans:
                 directory = "reset";
+                header = "PackID\tQty\tScanID\tDate\tScanner\tPackName\n";
                 break;
         }
 
         try
         {
-            File exportFile = ScanWriter.writeExportFile(context, scanCursor);
+            File exportFile = ScanWriter.writeExportFile(context, header, scanCursor);
             DropboxManager dropboxManager = new DropboxManager(context);
-            try
-            {
-                dropboxManager.writeToDropbox(exportFile, File.separator + directory + File.separator + exportFile.getName(), true, true).join();
-            }
-            catch(InterruptedException e)
-            {
-                e.printStackTrace();
-            }
+            dropboxManager.writeToDropbox(exportFile, File.separator + directory + File.separator + exportFile.getName());
             success = true;
         }
         catch(IOException e)
@@ -50,21 +45,25 @@ public class ScanWriter
         return success;
     }
 
-    private static File writeExportFile(Context context, Cursor scanCursor) throws IOException
+    private static File writeExportFile(Context context, String header, Cursor scanCursor) throws IOException
     {
         String fileName = DroidInfo.getDeviceName() + "_" + MoreDateFunctions.getNowFileTimestamp() + ".txt";
         File exportFile = new File(context.getFilesDir() + File.separator + fileName);
-        writeToFile(exportFile, scanCursor);
+        writeToFile(exportFile, header, scanCursor);
         writeBackup(exportFile);
 
         return exportFile;
     }
 
-    private static void writeToFile(File writeFile, Cursor scanCursor) throws IOException
+    private static void writeToFile(File writeFile, String header, Cursor scanCursor) throws IOException
     {
         String writeString;
         FileOutputStream output = new FileOutputStream(writeFile, true);
 
+        if(!header.isEmpty())
+        {
+            output.write(header.getBytes());
+        }
         while (scanCursor.moveToNext())
         {
             writeString = buildString(scanCursor);
@@ -90,7 +89,7 @@ public class ScanWriter
         int columnCount = scanCursor.getColumnCount();
 
         //Skip pKey
-        for(int count = 1; count < columnCount; count++)
+        for(int count = 0; count < columnCount; count++)
         {
             if(count == columnCount - 1)
             {
