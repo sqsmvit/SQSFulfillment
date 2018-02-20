@@ -33,6 +33,15 @@
         android:layout_alignParentBottom="true"
         android:text="Start Scanning" />
 
+    <Button
+        android:id="@+id/KillUpdateLoopButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/LaunchFulfillmentScanButton"
+        android:layout_centerHorizontal="true"
+        android:visibility="gone"
+        android:text="Kill Update Loop" />
+
     <TextView
         android:id="@+id/VersionText"
         android:layout_width="wrap_content"

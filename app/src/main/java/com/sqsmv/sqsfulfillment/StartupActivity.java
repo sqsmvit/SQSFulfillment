@@ -51,6 +51,21 @@ public class StartupActivity extends Activity
                 checkDailyTasks();
             }
         });
+
+        if(!appConfig.accessString(DroidConfigManager.PRIOR_VERSION, null, "").isEmpty())
+        {
+            final Button killUpdateLoopButton = (Button)findViewById(R.id.KillUpdateLoopButton);
+            killUpdateLoopButton.setVisibility(View.VISIBLE);
+            killUpdateLoopButton.setOnClickListener(new View.OnClickListener()
+            {
+                @Override
+                public void onClick(View view)
+                {
+                    appConfig.accessString(DroidConfigManager.PRIOR_VERSION, "", "");
+                    killUpdateLoopButton.setVisibility(View.GONE);
+                }
+            });
+        }
     }
 
     @Override
